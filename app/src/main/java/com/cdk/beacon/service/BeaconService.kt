@@ -45,6 +45,9 @@ class BeaconService : JobService() {
 
         // --- End test code ---
 
+
+
+
         /*lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 val latitude = location.latitude

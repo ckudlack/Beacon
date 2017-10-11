@@ -10,6 +10,7 @@ import com.cdk.beacon.R
 import com.cdk.beacon.service.BeaconService
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.startActivity
 
 @Suppress("unused")
 class MainActivity : AppCompatActivity() {
@@ -23,21 +24,16 @@ class MainActivity : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
 
         start.setOnClickListener({ startButtonClicked() })
+        map.setOnClickListener({ startActivity<MapActivity>() })
     }
 
     override fun onStart() {
         super.onStart()
-        /*if (firebaseAuth.currentUser != null) {
+        if (firebaseAuth.currentUser != null) {
             // Do something... or not
         } else {
-            firebaseAuth.createUserWithEmailAndPassword("thebigcheese40@gmail.com", "asw0rd").addOnCompleteListener(this, { task ->
-                if (task.isSuccessful) {
-
-                } else {
-
-                }
-            })
-        }*/
+            startActivity<LoginActivity>()
+        }
     }
 
     fun startButtonClicked() {
