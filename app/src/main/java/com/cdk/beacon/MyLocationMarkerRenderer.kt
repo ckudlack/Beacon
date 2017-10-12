@@ -34,7 +34,7 @@ class MyLocationMarkerRenderer(context: Context, map: GoogleMap, clusterManager:
     }
 
     override fun setupClusterItemView(item: MyLocation?, isSelected: Boolean) {
-        clusterItemText.text = item?.timeStamp.toString()
+        clusterItemText.text = item?.index.toString()
         clusterItemText.setTextColor(ContextCompat.getColor(context, if (isSelected) android.R.color.white else android.R.color.black))
     }
 
