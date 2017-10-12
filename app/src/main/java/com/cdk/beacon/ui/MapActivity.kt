@@ -36,11 +36,9 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation> {
         val locationReference = database.reference
         val locationList = ArrayList<MyLocation>()
 
-        locationReference.child("locations").addListenerForSingleValueEvent(object : ValueEventListener {
+        locationReference.child("locations").orderByChild("timeStamp").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val value = dataSnapshot.value as Map<String, Any>
-
-                value.entries.forEach {
+                dataSnapshot.children.forEach {
                     val location = it.value as Map<*, *>
 
                     val latitude = location["latitude"] as Double
@@ -51,13 +49,11 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation> {
                     loc.index = locationList.size
                     locationList.add(loc)
                 }
-
                 mapPagerView.updateMapItems(locationList, false)
                 mapPagerView.moveCameraToBounds(createBoundsFromList(locationList), 200)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-
             }
         })
     }

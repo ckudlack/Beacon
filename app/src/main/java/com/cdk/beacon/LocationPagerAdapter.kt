@@ -11,7 +11,11 @@ class LocationPagerAdapter : MapPagerAdapter<MyLocation, ItemViewHolder>() {
     @SuppressLint("MissingSuperCall")
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-        holder.title.text = getItemAtPosition(position).index.toString()
+
+        val location = getItemAtPosition(position)
+        val formattedDateTime = DateTimeUtils.formatWithWeekday(holder.itemView.context, location.timeStamp)
+
+        holder.title.text = formattedDateTime
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ItemViewHolder {
