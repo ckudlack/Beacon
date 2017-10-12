@@ -72,6 +72,15 @@
                 android:text="@string/action_sign_in"
                 android:textStyle="bold"/>
 
+            <TextView
+                android:id="@+id/already_signed_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="12dp"
+                android:text="@string/already_have_an_account"
+                android:textColor="@android:color/holo_blue_dark"/>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

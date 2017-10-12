@@ -11,14 +11,19 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import com.cdk.beacon.R
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_login.*
+import org.jetbrains.anko.textResource
 import org.jetbrains.anko.toast
 
 /**
  * A login screen that offers login via email/password.
  */
 class LoginActivity : AppCompatActivity() {
+
+    private var login = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +39,11 @@ class LoginActivity : AppCompatActivity() {
         })
 
         email_sign_in_button.setOnClickListener { attemptLogin() }
+        already_signed_up.setOnClickListener {
+            login = !login
+            email_sign_in_button.textResource = if (login) R.string.log_in else R.string.action_sign_in_short
+            already_signed_up.textResource = if (login) R.string.need_to_sign_in else R.string.already_have_an_account
+        }
     }
 
     /**
@@ -88,26 +98,33 @@ class LoginActivity : AppCompatActivity() {
             // perform the user login attempt.
             showProgress(true)
 
-            FirebaseAuth.getInstance().signInWithEmailAndPassword(emailStr, passwordStr).addOnCompleteListener(this, { task ->
-                showProgress(false)
-                if (task.isSuccessful) {
-                    toast("Login successful")
-                    finish()
-                } else {
-                    toast(task.exception?.localizedMessage.toString())
-                }
-            })
+            if (login) {
+                loginUser(emailStr, passwordStr)
+            } else {
+                signUpUser(emailStr, passwordStr)
+            }
+        }
+    }
 
-            // Send to Firebase - new User
-            /*FirebaseAuth.getInstance().createUserWithEmailAndPassword(emailStr, passwordStr).addOnCompleteListener(this, { task ->
-                showProgress(false)
-                if (task.isSuccessful) {
-                    toast("Sign up successful")
-                    finish()
-                } else {
-                    toast(task.exception?.localizedMessage.toString())
-                }
-            })*/
+    private fun signUpUser(emailStr: String, passwordStr: String) {
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(emailStr, passwordStr).addOnCompleteListener(this, { task ->
+            handleResponse(task)
+        })
+    }
+
+    private fun loginUser(emailStr: String, passwordStr: String) {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(emailStr, passwordStr).addOnCompleteListener(this, { task ->
+            handleResponse(task)
+        })
+    }
+
+    private fun LoginActivity.handleResponse(task: Task<AuthResult>) {
+        showProgress(false)
+        if (task.isSuccessful) {
+            toast("Login successful")
+            finish()
+        } else {
+            toast(task.exception?.localizedMessage.toString())
         }
     }
 
