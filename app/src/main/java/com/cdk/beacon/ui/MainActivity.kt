@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import com.cdk.beacon.R
 import com.cdk.beacon.service.BeaconService
 import com.google.firebase.auth.FirebaseAuth
@@ -51,6 +53,24 @@ class MainActivity : AppCompatActivity() {
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             BeaconService.schedule(this)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.logout -> {
+                FirebaseAuth.getInstance().signOut()
+                startActivity<LoginActivity>()
+            }
+            else -> {
+                return super.onOptionsItemSelected(item)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     companion object {
