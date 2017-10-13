@@ -15,7 +15,8 @@ class LocationPagerAdapter : MapPagerAdapter<MyLocation, ItemViewHolder>() {
         val location = getItemAtPosition(position)
         val formattedDateTime = DateTimeUtils.formatWithWeekday(holder.itemView.context, location.timeStamp)
 
-        holder.title.text = formattedDateTime
+        holder.position.text = location.latitude.toString() + ", " + location.longitude.toString()
+        holder.time.text = formattedDateTime
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ItemViewHolder {

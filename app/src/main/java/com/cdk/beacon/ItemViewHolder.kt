@@ -5,5 +5,6 @@ import android.view.View
 import android.widget.TextView
 
 class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    val title: TextView = itemView.findViewById(R.id.title)
+    val position = itemView.findViewById<TextView>(R.id.position)
+    val time = itemView.findViewById<TextView>(R.id.date)
 }

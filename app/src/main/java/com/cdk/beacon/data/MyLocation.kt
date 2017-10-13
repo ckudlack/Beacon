@@ -6,7 +6,7 @@ import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
-data class MyLocation(private val longitude: Double, private val latitude: Double, val timeStamp: Long) : MapClusterItem {
+data class MyLocation(val longitude: Double, val latitude: Double, val timeStamp: Long) : MapClusterItem {
 
     @Exclude
     var index: Int? = null
