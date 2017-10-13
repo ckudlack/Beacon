@@ -1,4 +1,4 @@
-package com.cdk.beacon.mvp
+package com.cdk.beacon.ui
 
 interface BaseView {
     fun showLoading()

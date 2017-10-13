@@ -1,4 +1,4 @@
-package com.cdk.beacon.mvp
+package com.cdk.beacon.mvp.presenter
 
 interface BasePresenter {
     fun onStop()

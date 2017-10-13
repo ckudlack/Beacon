@@ -46,8 +46,6 @@ class BeaconService : JobService() {
         // --- End test code ---
 
 
-
-
         /*lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 val latitude = location.latitude
@@ -57,6 +55,8 @@ class BeaconService : JobService() {
                 val database = FirebaseDatabase.getInstance()
                 val locationReference = database.reference
                 val currentTimeMillis = System.currentTimeMillis()
+
+                toast("Sent location")
 
                 locationReference
                         .child("locations")
@@ -69,15 +69,16 @@ class BeaconService : JobService() {
     companion object {
 
         private val JOB_ID = 123
-        private val ONE_MIN = 60 * 1000L
-        private val TEN_SEC = 10 * 1000L
+        private val SIX_HOURS = 6 * 60 * 60 * 1000L
+        private val TEN_SEC = 5 * 1000L
 
+        // There is a minimum period of 15 mins for a periodic JobService
         fun schedule(context: Context) {
             val componentName = ComponentName(context, BeaconService::class.java)
             val builder = JobInfo.Builder(JOB_ID, componentName)
-//                    .setPeriodic(TEN_SEC)
+//                    .setPeriodic(FIVE_SEC)
 //                    .setRequiresBatteryNotLow(true)
-//                    .setRequiresCharging(false)
+                    .setRequiresCharging(false)
                     .setMinimumLatency(TEN_SEC)
                     .setOverrideDeadline((5 * TEN_SEC))
 

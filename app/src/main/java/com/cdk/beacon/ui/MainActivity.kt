@@ -9,8 +9,8 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.cdk.beacon.R
-import com.cdk.beacon.mvp.MainContract
-import com.cdk.beacon.mvp.MainPresenter
+import com.cdk.beacon.mvp.contract.MainContract
+import com.cdk.beacon.mvp.presenter.MainPresenter
 import com.cdk.beacon.service.BeaconService
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,8 +19,8 @@ import org.jetbrains.anko.startActivity
 @Suppress("unused")
 class MainActivity : AppCompatActivity(), MainContract.View {
 
-    lateinit var firebaseAuth: FirebaseAuth
-    lateinit var presenter: MainContract.Presenter
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var presenter: MainContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

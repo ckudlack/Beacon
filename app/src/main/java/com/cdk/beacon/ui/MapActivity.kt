@@ -6,25 +6,28 @@ import com.cdk.beacon.LocationPagerAdapter
 import com.cdk.beacon.MyLocationMarkerRenderer
 import com.cdk.beacon.R
 import com.cdk.beacon.data.MyLocation
+import com.cdk.beacon.mvp.contract.MapContract
+import com.cdk.beacon.mvp.presenter.MapPresenter
+import com.cdk.beacon.mvp.repository.LocationRepository
+import com.cdk.beacon.mvp.usecase.MapUseCase
 import com.cdk.bettermapsearch.MapPagerView
 import com.cdk.bettermapsearch.clustering.MapPagerClusterManager
 import com.cdk.bettermapsearch.clustering.MapPagerMarkerRenderer
 import com.cdk.bettermapsearch.interfaces.MapReadyCallback
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import java.util.*
 
-class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation> {
+class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContract.View {
 
     private lateinit var mapPagerView: MapPagerView<MyLocation>
+    private lateinit var presenter: MapContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+
+        presenter = MapPresenter(this, MapUseCase(LocationRepository(FirebaseDatabase.getInstance())));
 
         mapPagerView = findViewById(R.id.map_pager)
         mapPagerView.onCreate(savedInstanceState)
@@ -32,30 +35,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation> {
         mapPagerView.getMapAsync(this)
         mapPagerView.setClusteringEnabled(false)
 
-        val database = FirebaseDatabase.getInstance()
-        val locationReference = database.reference
-        val locationList = ArrayList<MyLocation>()
-
-        locationReference.child("locations").orderByChild("timeStamp").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                dataSnapshot.children.forEach {
-                    val location = it.value as Map<*, *>
-
-                    val latitude = location["latitude"] as Double
-                    val longitude = location["longitude"] as Double
-                    val timestamp = location["timeStamp"] as Long
-
-                    val loc = MyLocation(latitude, longitude, timestamp)
-                    loc.index = locationList.size
-                    locationList.add(loc)
-                }
-                mapPagerView.updateMapItems(locationList, false)
-                mapPagerView.moveCameraToBounds(createBoundsFromList(locationList), 200)
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
+        presenter.getLocations("timeStamp")
     }
 
     override fun onResume() {
@@ -98,5 +78,22 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation> {
             boundsBuilder.include(item.position)
         }
         return boundsBuilder.build()
+    }
+
+    override fun showLoading() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun hideLoading() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun showError(error: Throwable) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun displayLocations(locations: List<MyLocation>) {
+        mapPagerView.updateMapItems(locations, false)
+        mapPagerView.moveCameraToBounds(createBoundsFromList(locations), 200)
     }
 }

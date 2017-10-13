@@ -1,4 +1,6 @@
-package com.cdk.beacon.mvp
+package com.cdk.beacon.mvp.presenter
+
+import com.cdk.beacon.mvp.contract.MainContract
 
 
 class MainPresenter(private var view: MainContract.View) : MainContract.Presenter {
