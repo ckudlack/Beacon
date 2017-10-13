@@ -9,21 +9,25 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.cdk.beacon.R
+import com.cdk.beacon.mvp.MainContract
+import com.cdk.beacon.mvp.MainPresenter
 import com.cdk.beacon.service.BeaconService
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.startActivity
 
 @Suppress("unused")
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainContract.View {
 
     lateinit var firebaseAuth: FirebaseAuth
+    lateinit var presenter: MainContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         firebaseAuth = FirebaseAuth.getInstance()
+        presenter = MainPresenter(this)
 
         start.setOnClickListener({ startButtonClicked() })
         map.setOnClickListener({ startActivity<MapActivity>() })
@@ -31,28 +35,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (firebaseAuth.currentUser != null) {
-            // Do something... or not
-        } else {
-            startActivity<LoginActivity>()
-        }
+        presenter.onStart(firebaseAuth.currentUser != null)
     }
 
     private fun startButtonClicked() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            BeaconService.schedule(this)
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
-                    LOCATION_PERMISSION_CODE)
-        }
+        presenter.onStartButtonClicked(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == LOCATION_PERMISSION_CODE && grantResults.isNotEmpty()
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            BeaconService.schedule(this)
-        }
+        presenter.onPermissionsGranted(requestCode == LOCATION_PERMISSION_CODE && grantResults.isNotEmpty()
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -63,14 +56,43 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.logout -> {
-                FirebaseAuth.getInstance().signOut()
-                startActivity<LoginActivity>()
+                presenter.onLogOutClicked()
             }
             else -> {
                 return super.onOptionsItemSelected(item)
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun showLoading() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun hideLoading() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun showError(error: Throwable) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun startLoginActivity() {
+        startActivity<LoginActivity>()
+    }
+
+    override fun scheduleBeaconService() {
+        BeaconService.schedule(this)
+    }
+
+    override fun requestPermissions() {
+        ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_CODE)
+    }
+
+    override fun logOut() {
+        FirebaseAuth.getInstance().signOut()
     }
 
     companion object {
