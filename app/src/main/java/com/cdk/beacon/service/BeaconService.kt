@@ -8,29 +8,64 @@ import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
 import com.cdk.beacon.data.MyLocation
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.google.firebase.database.FirebaseDatabase
+import org.jetbrains.anko.toast
+
 
 class BeaconService : JobService() {
 
+    private lateinit var callback: LocationCallback
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
     override fun onStartJob(params: JobParameters): Boolean {
         // Get location, send to server
-        sendLocation()
+        getLocation(params)
         return true
     }
 
     override fun onStopJob(params: JobParameters): Boolean {
         // Shut everything down
+        removeListenerAndFinishJob(params)
         return false
     }
 
     @SuppressLint("MissingPermission")
-    private fun sendLocation() {
-        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        val lastLocation = fusedLocationProviderClient.lastLocation
+    private fun getLocation(jobParams: JobParameters) {
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
-        // --- Test code ---
-        val latitude = 34.1234
+        callback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                if (locationResult != null) {
+                    for (location in locationResult.locations) {
+                        // Update UI with location data
+                        // ...
+
+                        val latitude = location.latitude
+                        val longitude = location.longitude
+
+                        sendLocationToFirebase(latitude, longitude)
+                        removeListenerAndFinishJob(jobParams)
+                    }
+                } else {
+                    toast("Location is not available")
+                    // TODO: Send notification
+                    removeListenerAndFinishJob(jobParams)
+                }
+            }
+
+            override fun onLocationAvailability(locationAvailability: LocationAvailability?) {
+                super.onLocationAvailability(locationAvailability)
+                if (locationAvailability?.isLocationAvailable != true) {
+                    toast("Location is not available")
+                    // TODO: Send notification
+                    removeListenerAndFinishJob(jobParams)
+                }
+            }
+        }
+
+        // --- DB Test code ---
+        /*val latitude = 34.1234
         val longitude = -122.084
 
         // Send these to Firebase
@@ -41,29 +76,42 @@ class BeaconService : JobService() {
         locationReference
                 .child("locations")
                 .push()
-                .setValue(MyLocation(latitude, longitude, currentTimeMillis))
+                .setValue(MyLocation(latitude, longitude, currentTimeMillis))*/
 
         // --- End test code ---
 
+        fusedLocationProviderClient.requestLocationUpdates(createLocationRequest(), callback, null)
+    }
 
-        /*lastLocation.addOnSuccessListener { location ->
-            if (location != null) {
-                val latitude = location.latitude
-                val longitude = location.longitude
+    private fun removeListenerAndFinishJob(jobParams: JobParameters) {
+        fusedLocationProviderClient.removeLocationUpdates(callback)
+        jobFinished(jobParams, false)
+    }
 
-                // Send these to Firebase
-                val database = FirebaseDatabase.getInstance()
-                val locationReference = database.reference
-                val currentTimeMillis = System.currentTimeMillis()
+    private fun sendLocationToFirebase(latitude: Double, longitude: Double) {
+        // Send these to Firebase
+        val database = FirebaseDatabase.getInstance()
+        val locationReference = database.reference
+        val currentTimeMillis = System.currentTimeMillis()
 
-                toast("Sent location")
+        toast("Sent location")
 
-                locationReference
-                        .child("locations")
-                        .push()
-                        .setValue(MyLocation(latitude, longitude, currentTimeMillis))
-            }
-        }*/
+        locationReference
+                .child("locations")
+                .push()
+                .setValue(MyLocation(latitude, longitude, currentTimeMillis))
+    }
+
+    private fun createLocationRequest(): LocationRequest {
+        val locationRequest = LocationRequest()
+        locationRequest.interval = 10000
+        locationRequest.fastestInterval = 10000
+        locationRequest.priority = LocationRequest.PRIORITY_LOW_POWER
+        return locationRequest
+    }
+
+    private fun sendNotification() {
+
     }
 
     companion object {
