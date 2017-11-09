@@ -1,12 +1,18 @@
 package com.cdk.beacon.service
 
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.job.JobInfo
 import android.app.job.JobParameters
 import android.app.job.JobScheduler
 import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
+import android.os.Build
+import android.support.v4.app.NotificationCompat
+import com.cdk.beacon.DateTimeUtils
+import com.cdk.beacon.R
 import com.cdk.beacon.data.MyLocation
 import com.google.android.gms.location.*
 import com.google.firebase.database.FirebaseDatabase
@@ -49,7 +55,7 @@ class BeaconService : JobService() {
                     }
                 } else {
                     toast("Location is not available")
-                    // TODO: Send notification
+                    sendNotification("Location unavailable - " + DateTimeUtils.formatWithWeekday(baseContext, System.currentTimeMillis()))
                     removeListenerAndFinishJob(jobParams)
                 }
             }
@@ -58,7 +64,7 @@ class BeaconService : JobService() {
                 super.onLocationAvailability(locationAvailability)
                 if (locationAvailability?.isLocationAvailable != true) {
                     toast("Location is not available")
-                    // TODO: Send notification
+                    sendNotification("Location unavailable - " + DateTimeUtils.formatWithWeekday(baseContext, System.currentTimeMillis()))
                     removeListenerAndFinishJob(jobParams)
                 }
             }
@@ -100,6 +106,8 @@ class BeaconService : JobService() {
                 .child("locations")
                 .push()
                 .setValue(MyLocation(latitude, longitude, currentTimeMillis))
+
+        sendNotification("Location sent at " + DateTimeUtils.formatWithWeekday(this, currentTimeMillis))
     }
 
     private fun createLocationRequest(): LocationRequest {
@@ -110,25 +118,48 @@ class BeaconService : JobService() {
         return locationRequest
     }
 
-    private fun sendNotification() {
+    private fun sendNotification(text: String) {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channelId = "location"
+        val notificationId = 1234
 
+        val builder = NotificationCompat.Builder(this, channelId).setVibrate(null).setSound(null).setOngoing(false)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(text)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channelName = "Beacon"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val notificationChannel: NotificationChannel
+
+            notificationChannel = NotificationChannel(channelId, channelName, importance)
+            notificationChannel.enableVibration(true)
+            notificationChannel.enableLights(true)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+
+        notificationManager.notify(notificationId, builder.build())
     }
 
     companion object {
 
         private val JOB_ID = 123
-        private val SIX_HOURS = 6 * 60 * 60 * 1000L
+        private val ONE_HOUR = 6 * 60 * 60 * 1000L
         private val TEN_SEC = 5 * 1000L
 
         // There is a minimum period of 15 mins for a periodic JobService
         fun schedule(context: Context) {
             val componentName = ComponentName(context, BeaconService::class.java)
             val builder = JobInfo.Builder(JOB_ID, componentName)
-//                    .setPeriodic(FIVE_SEC)
-//                    .setRequiresBatteryNotLow(true)
+                    .setPeriodic(ONE_HOUR)
                     .setRequiresCharging(false)
-                    .setMinimumLatency(TEN_SEC)
-                    .setOverrideDeadline((5 * TEN_SEC))
+//                    .setMinimumLatency(TEN_SEC)
+//                    .setOverrideDeadline((5 * TEN_SEC))
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                builder.setRequiresBatteryNotLow(true)
+            }
 
             val scheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
             scheduler.schedule(builder.build())
