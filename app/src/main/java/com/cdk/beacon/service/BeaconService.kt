@@ -55,7 +55,7 @@ class BeaconService : JobService() {
                     }
                 } else {
                     toast("Location is not available")
-                    sendNotification("Location unavailable - " + DateTimeUtils.formatWithWeekday(baseContext, System.currentTimeMillis()))
+                    sendNotification("Location is null - " + DateTimeUtils.formatWithWeekday(baseContext, System.currentTimeMillis()))
                     removeListenerAndFinishJob(jobParams)
                 }
             }
@@ -145,7 +145,7 @@ class BeaconService : JobService() {
     companion object {
 
         private val JOB_ID = 123
-        private val ONE_HOUR = 6 * 60 * 60 * 1000L
+        private val ONE_HOUR = 60 * 60 * 1000L
         private val TEN_SEC = 5 * 1000L
 
         // There is a minimum period of 15 mins for a periodic JobService
