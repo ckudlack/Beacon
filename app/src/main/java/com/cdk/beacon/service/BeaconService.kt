@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.job.JobInfo
+import android.app.job.JobInfo.NETWORK_TYPE_ANY
 import android.app.job.JobParameters
 import android.app.job.JobScheduler
 import android.app.job.JobService
@@ -21,7 +22,7 @@ import org.jetbrains.anko.toast
 
 class BeaconService : JobService() {
 
-    private lateinit var callback: LocationCallback
+    private var callback: LocationCallback? = null
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     override fun onStartJob(params: JobParameters): Boolean {
@@ -91,6 +92,7 @@ class BeaconService : JobService() {
 
     private fun removeListenerAndFinishJob(jobParams: JobParameters) {
         fusedLocationProviderClient.removeLocationUpdates(callback)
+        callback = null
         jobFinished(jobParams, false)
     }
 
@@ -130,7 +132,7 @@ class BeaconService : JobService() {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             val channelName = "Beacon"
-            val importance = NotificationManager.IMPORTANCE_HIGH
+            val importance = NotificationManager.IMPORTANCE_LOW
             val notificationChannel: NotificationChannel
 
             notificationChannel = NotificationChannel(channelId, channelName, importance)
@@ -154,8 +156,7 @@ class BeaconService : JobService() {
             val builder = JobInfo.Builder(JOB_ID, componentName)
                     .setPeriodic(ONE_HOUR)
                     .setRequiresCharging(false)
-//                    .setMinimumLatency(TEN_SEC)
-//                    .setOverrideDeadline((5 * TEN_SEC))
+                    .setRequiredNetworkType(NETWORK_TYPE_ANY)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder.setRequiresBatteryNotLow(true)
