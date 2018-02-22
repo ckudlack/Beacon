@@ -9,13 +9,15 @@ interface MainContract {
         fun onStartButtonClicked(permissionsGranted: Boolean)
         fun onPermissionsGranted(granted: Boolean)
         fun onLogOutClicked()
-        fun onStart(userExists: Boolean)
+        fun onStart(email : String?)
     }
 
     interface View : BaseView {
         fun startLoginActivity()
         fun scheduleBeaconService()
         fun requestPermissions()
-        fun logOut();
+        fun logOut()
+        fun startMapActivity()
+        fun close()
     }
 }
