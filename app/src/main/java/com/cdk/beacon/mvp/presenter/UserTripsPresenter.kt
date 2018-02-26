@@ -19,19 +19,15 @@ class UserTripsPresenter(private var view: UserTripsContract.View, private var u
 
     override fun getTrips(userId: String) {
         view.showLoading()
-        useCase.getTrips(userId, object : DefaultSubscriber<List<BeaconTrip>>() {
-            override fun onNext(t: List<BeaconTrip>) {
+        useCase.getTrips(userId, object : DefaultSubscriber<MutableList<BeaconTrip>>() {
+            override fun onNext(t: MutableList<BeaconTrip>) {
                 view.showTrips(t)
                 view.hideLoading()
             }
         })
     }
 
-    override fun addTrip(userId: String, trip: BeaconTrip) {
-        useCase.addTrip(userId, trip, object : DefaultSubscriber<List<BeaconTrip>>() {
-            override fun onNext(t: List<BeaconTrip>) {
-                view.showTrips(t)
-            }
-        })
+    override fun addTripClicked() {
+        view.startAddTripActivity()
     }
 }

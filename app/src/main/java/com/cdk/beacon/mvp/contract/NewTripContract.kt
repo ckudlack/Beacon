@@ -4,15 +4,13 @@ import com.cdk.beacon.data.BeaconTrip
 import com.cdk.beacon.mvp.presenter.BasePresenter
 import com.cdk.beacon.ui.BaseView
 
-interface UserTripsContract {
+interface NewTripContract {
 
     interface Presenter : BasePresenter {
-        fun getTrips(userId: String)
-        fun addTripClicked()
+        fun addTrip(userId: String, trip: BeaconTrip)
     }
 
     interface View : BaseView {
-        fun showTrips(trips: MutableList<BeaconTrip>)
-        fun startAddTripActivity()
+        fun goToStartBeaconActivity()
     }
 }

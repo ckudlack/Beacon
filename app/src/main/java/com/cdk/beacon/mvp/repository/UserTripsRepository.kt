@@ -10,26 +10,24 @@ import rx.Observable
 class UserTripsRepository(private val database: FirebaseDatabase) : UserTripsDataContract.Repository {
 
     override fun addTrip(userId: String, trip: BeaconTrip): Observable<List<BeaconTrip>> {
-        database.reference.child("trips").child(userId).setValue(trip).addOnCompleteListener {
+        database.reference.child("trips").child(userId).push().setValue(trip).addOnCompleteListener {
             if (it.isSuccessful) {
                 val result = it.result
             } else {
                 val exception = it.exception
             }
         }
-
-        //TODO: Need this to be synchronous with the result
-        return getTrips(userId)
+        return Observable.just(ArrayList())
     }
 
-    override fun getTrips(userId: String): Observable<List<BeaconTrip>> {
+    override fun getTrips(userId: String): Observable<MutableList<BeaconTrip>> {
         return RxFirebaseDatabase.observeValueEvent(database.reference.child("trips").child(userId).orderByKey()).flatMap { dataSnapshotRxFirebaseChildEvent ->
-            val tripList = ArrayList<BeaconTrip>()
+            val tripList = mutableListOf<BeaconTrip>()
             dataSnapshotRxFirebaseChildEvent.children.forEach {
                 val trip = it.value as Map<*, *>
 
                 val name = trip["name"] as String
-                val locations = trip["locations"] as List<MyLocation>
+                val locations = if (trip.containsKey("locations")) trip["locations"] as List<MyLocation> else ArrayList()
                 val observers = trip["observers"] as List<String>
 
                 tripList.add(BeaconTrip(locations, name, observers))

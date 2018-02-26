@@ -2,6 +2,7 @@ package com.cdk.beacon.ui
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import com.cdk.beacon.R
 import com.cdk.beacon.TripsAdapter
 import com.cdk.beacon.data.BeaconTrip
@@ -12,6 +13,7 @@ import com.cdk.beacon.mvp.usecase.TripsUseCase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_trips.*
+import org.jetbrains.anko.startActivity
 
 class TripsActivity : AppCompatActivity(), UserTripsContract.View {
 
@@ -25,7 +27,15 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View {
 
         firebaseAuth = FirebaseAuth.getInstance()
         presenter = UserTripsPresenter(this, TripsUseCase(UserTripsRepository(FirebaseDatabase.getInstance())))
+        adapter = TripsAdapter()
+        trips_list.adapter = adapter
+        trips_list.layoutManager = LinearLayoutManager(this)
 
+        add_trip_button.setOnClickListener { presenter.addTripClicked() }
+    }
+
+    override fun onStart() {
+        super.onStart()
         presenter.getTrips(firebaseAuth.currentUser?.uid ?: "")
     }
 
@@ -41,11 +51,11 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun addTripClicked() {
-        // TODO: Start "Create Trip" Activity
+    override fun showTrips(trips: MutableList<BeaconTrip>) {
+        adapter.updateItems(trips)
     }
 
-    override fun showTrips(trips: List<BeaconTrip>) {
-        adapter = TripsAdapter(trips)
+    override fun startAddTripActivity() {
+        startActivity<NewTripActivity>()
     }
 }

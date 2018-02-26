@@ -40,6 +40,8 @@
         </activity>
         <activity android:name=".ui.TripsActivity">
         </activity>
+        <activity android:name=".ui.NewTripActivity">
+        </activity>
     </application>
 
 </manifest>

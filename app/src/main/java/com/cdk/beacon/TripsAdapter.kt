@@ -7,17 +7,25 @@ import android.view.ViewGroup
 import com.cdk.beacon.data.BeaconTrip
 import kotlinx.android.synthetic.main.trips_item_view.view.*
 
-class TripsAdapter(private var tripList: List<BeaconTrip>?) : RecyclerView.Adapter<TripsViewHolder>() {
+class TripsAdapter : RecyclerView.Adapter<TripsViewHolder>() {
+
+    private val tripList: MutableList<BeaconTrip> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): TripsViewHolder {
         val view = LayoutInflater.from(parent?.context).inflate(R.layout.trips_item_view, parent, false)
         return TripsViewHolder(view)
     }
 
-    override fun getItemCount(): Int = tripList?.size ?: 0
+    override fun getItemCount(): Int = tripList.size
 
     override fun onBindViewHolder(holder: TripsViewHolder?, position: Int) {
-        holder?.bind(tripList?.get(position))
+        holder?.bind(tripList[position])
+    }
+
+    fun updateItems(trips: MutableList<BeaconTrip>) {
+        tripList.clear()
+        tripList.addAll(trips)
+        notifyDataSetChanged()
     }
 }
 

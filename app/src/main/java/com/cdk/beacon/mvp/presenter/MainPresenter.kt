@@ -14,6 +14,8 @@ class MainPresenter(private var view: MainContract.View) : MainContract.Presente
     override fun onStart(email: String?) {
         if (email == null) {
             view.startLoginActivity()
+        } else {
+            view.startMapActivity()
         }
     }
 
