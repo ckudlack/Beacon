@@ -10,12 +10,16 @@ import com.cdk.beacon.mvp.contract.UserTripsContract
 import com.cdk.beacon.mvp.presenter.UserTripsPresenter
 import com.cdk.beacon.mvp.repository.UserTripsRepository
 import com.cdk.beacon.mvp.usecase.TripsUseCase
+import com.cdk.beacon.service.BeaconService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_trips.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
 import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.yesButton
 
-class TripsActivity : AppCompatActivity(), UserTripsContract.View {
+class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.TripClickedCallback {
 
     private lateinit var presenter: UserTripsContract.Presenter
     private lateinit var firebaseAuth: FirebaseAuth
@@ -27,7 +31,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View {
 
         firebaseAuth = FirebaseAuth.getInstance()
         presenter = UserTripsPresenter(this, TripsUseCase(UserTripsRepository(FirebaseDatabase.getInstance())))
-        adapter = TripsAdapter()
+        adapter = TripsAdapter(this)
         trips_list.adapter = adapter
         trips_list.layoutManager = LinearLayoutManager(this)
 
@@ -57,5 +61,20 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View {
 
     override fun startAddTripActivity() {
         startActivity<NewTripActivity>()
+    }
+
+    override fun startMapActivity() {
+        startActivity<MapActivity>()
+    }
+
+    override fun startBeacon() {
+        BeaconService.schedule(this)
+    }
+
+    override fun onTripClicked(tripId: String) {
+        alert("Start broadcasting your trip?", "The beacon is not lit") {
+            yesButton { presenter.startBeaconClicked() }
+            noButton { presenter.dontStartBeaconClicked() }
+        }.show()
     }
 }

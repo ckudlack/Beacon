@@ -9,10 +9,14 @@ interface UserTripsContract {
     interface Presenter : BasePresenter {
         fun getTrips(userId: String)
         fun addTripClicked()
+        fun startBeaconClicked()
+        fun dontStartBeaconClicked()
     }
 
     interface View : BaseView {
         fun showTrips(trips: MutableList<BeaconTrip>)
         fun startAddTripActivity()
+        fun startMapActivity()
+        fun startBeacon()
     }
 }

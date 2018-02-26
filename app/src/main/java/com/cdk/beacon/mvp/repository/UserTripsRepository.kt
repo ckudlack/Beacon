@@ -30,7 +30,7 @@ class UserTripsRepository(private val database: FirebaseDatabase) : UserTripsDat
                 val locations = if (trip.containsKey("locations")) trip["locations"] as List<MyLocation> else ArrayList()
                 val observers = trip["observers"] as List<String>
 
-                tripList.add(BeaconTrip(locations, name, observers))
+                tripList.add(BeaconTrip(locations, name, observers, it.key))
             }
 
             Observable.just(tripList)

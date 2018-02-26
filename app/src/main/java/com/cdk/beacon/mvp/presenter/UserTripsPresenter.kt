@@ -30,4 +30,13 @@ class UserTripsPresenter(private var view: UserTripsContract.View, private var u
     override fun addTripClicked() {
         view.startAddTripActivity()
     }
+
+    override fun startBeaconClicked() {
+        view.startBeacon()
+        view.startMapActivity()
+    }
+
+    override fun dontStartBeaconClicked() {
+        view.startMapActivity()
+    }
 }

@@ -16,6 +16,7 @@ import com.cdk.beacon.DateTimeUtils
 import com.cdk.beacon.R
 import com.cdk.beacon.data.MyLocation
 import com.google.android.gms.location.*
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import org.jetbrains.anko.toast
 
@@ -101,6 +102,7 @@ class BeaconService : JobService() {
         val database = FirebaseDatabase.getInstance()
         val locationReference = database.reference
         val currentTimeMillis = System.currentTimeMillis()
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
 
         toast("Sent location")
 
@@ -154,7 +156,7 @@ class BeaconService : JobService() {
         fun schedule(context: Context) {
             val componentName = ComponentName(context, BeaconService::class.java)
             val builder = JobInfo.Builder(JOB_ID, componentName)
-                    .setPeriodic(ONE_HOUR)
+                    .setPeriodic(12 * ONE_HOUR)
                     .setRequiresCharging(false)
                     .setRequiredNetworkType(NETWORK_TYPE_ANY)
 

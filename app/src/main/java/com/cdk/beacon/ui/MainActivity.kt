@@ -11,7 +11,6 @@ import android.view.MenuItem
 import com.cdk.beacon.R
 import com.cdk.beacon.mvp.contract.MainContract
 import com.cdk.beacon.mvp.presenter.MainPresenter
-import com.cdk.beacon.service.BeaconService
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.startActivity
@@ -35,7 +34,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     override fun onStart() {
         super.onStart()
-        presenter.onStart(firebaseAuth.currentUser != null)
+        presenter.onStart(firebaseAuth.currentUser?.email)
     }
 
     private fun startButtonClicked() {
@@ -82,13 +81,28 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     }
 
     override fun scheduleBeaconService() {
-        BeaconService.schedule(this)
+        /*val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+        val database = FirebaseDatabase.getInstance()
+        val locationReference = database.getReference("users")
+
+        val key = locationReference.push().key
+        locationReference.child(key).setValue("blah")*/
     }
 
     override fun requestPermissions() {
         ActivityCompat.requestPermissions(this,
                 arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
                 LOCATION_PERMISSION_CODE)
+    }
+
+    override fun startMapActivity() {
+//        startActivity<MapActivity>()
+        startActivity<TripsActivity>()
+    }
+
+    override fun close() {
+        finish()
     }
 
     override fun logOut() {
