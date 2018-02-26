@@ -11,8 +11,8 @@ class MainPresenter(private var view: MainContract.View) : MainContract.Presente
     override fun onStop() {
     }
 
-    override fun onStart(userExists: Boolean) {
-        if (!userExists) {
+    override fun onStart(email: String?) {
+        if (email == null) {
             view.startLoginActivity()
         }
     }
