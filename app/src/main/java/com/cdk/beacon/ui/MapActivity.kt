@@ -27,7 +27,8 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
-        presenter = MapPresenter(this, MapUseCase(LocationRepository(FirebaseDatabase.getInstance())));
+        val database = FirebaseDatabase.getInstance()
+        presenter = MapPresenter(this, MapUseCase(LocationRepository(database)))
 
         mapPagerView = findViewById(R.id.map_pager)
         mapPagerView.onCreate(savedInstanceState)
@@ -35,7 +36,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         mapPagerView.getMapAsync(this)
         mapPagerView.setClusteringEnabled(false)
 
-        presenter.getLocations("timeStamp")
+        presenter.getLocations("timeStamp", intent.getStringExtra("tripId"))
     }
 
     override fun onResume() {

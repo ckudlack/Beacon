@@ -7,7 +7,7 @@ import com.cdk.beacon.ui.BaseView
 interface MapContract {
 
     interface Presenter : BasePresenter {
-        fun getLocations(sortByValue: String)
+        fun getLocations(sortByValue: String, tripId: String)
     }
 
     interface View : BaseView {

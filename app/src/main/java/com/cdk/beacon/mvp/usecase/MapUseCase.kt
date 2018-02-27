@@ -7,7 +7,7 @@ import rx.Subscriber
 
 class MapUseCase(private val repository: MapDataContract.Repository) : UseCase() {
 
-    fun getLocationList(sortByValue: String, subscriber: Subscriber<List<MyLocation>>) {
-        execute(repository.getLocationList(sortByValue), subscriber)
+    fun getLocationList(sortByValue: String, tripId: String, subscriber: Subscriber<List<MyLocation>>) {
+        execute(repository.getLocationList(sortByValue, tripId), subscriber)
     }
 }

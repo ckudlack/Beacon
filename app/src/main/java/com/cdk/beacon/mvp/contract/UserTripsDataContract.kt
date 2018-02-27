@@ -8,6 +8,7 @@ interface UserTripsDataContract {
 
     interface Repository : BaseRepository {
         fun getTrips(userId: String): Observable<MutableList<BeaconTrip>>
-        fun addTrip(userId: String, trip : BeaconTrip): Observable<List<BeaconTrip>>
+        fun getTrip(tripId: String): Observable<BeaconTrip>
+        fun addTrip(userId: String, trip: BeaconTrip): Observable<List<BeaconTrip>>
     }
 }

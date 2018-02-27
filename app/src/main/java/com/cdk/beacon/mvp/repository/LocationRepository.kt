@@ -8,8 +8,8 @@ import rx.Observable
 
 class LocationRepository(private val database: FirebaseDatabase) : MapDataContract.Repository {
 
-    override fun getLocationList(sortByValue: String): Observable<List<MyLocation>> {
-        return RxFirebaseDatabase.observeValueEvent(database.reference.child("locations").orderByChild(sortByValue)).flatMap { dataSnapshotRxFirebaseChildEvent ->
+    override fun getLocationList(sortByValue: String, tripId: String): Observable<List<MyLocation>> {
+        return RxFirebaseDatabase.observeValueEvent(database.reference.child("beacons").child(tripId).orderByChild(sortByValue)).flatMap { dataSnapshotRxFirebaseChildEvent ->
             val locationList = ArrayList<MyLocation>()
             dataSnapshotRxFirebaseChildEvent.children.forEach {
                 val location = it.value as Map<*, *>

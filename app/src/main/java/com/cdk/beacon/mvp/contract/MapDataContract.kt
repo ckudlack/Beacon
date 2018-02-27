@@ -7,6 +7,6 @@ import rx.Observable
 interface MapDataContract {
 
     interface Repository : BaseRepository {
-        fun getLocationList(sortByValue: String): Observable<List<MyLocation>>
+        fun getLocationList(sortByValue: String, tripId: String): Observable<List<MyLocation>>
     }
 }

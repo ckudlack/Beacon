@@ -63,18 +63,18 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
         startActivity<NewTripActivity>()
     }
 
-    override fun startMapActivity() {
-        startActivity<MapActivity>()
+    override fun startMapActivity(tripId: String) {
+        startActivity<MapActivity>("tripId" to tripId)
     }
 
-    override fun startBeacon() {
-        BeaconService.schedule(this)
+    override fun startBeacon(tripId: String) {
+        BeaconService.schedule(this, tripId)
     }
 
     override fun onTripClicked(tripId: String) {
         alert("Start broadcasting your trip?", "The beacon is not lit") {
-            yesButton { presenter.startBeaconClicked() }
-            noButton { presenter.dontStartBeaconClicked() }
+            yesButton { presenter.startBeaconClicked(tripId) }
+            noButton { presenter.dontStartBeaconClicked(tripId) }
         }.show()
     }
 }

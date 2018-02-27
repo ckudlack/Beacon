@@ -31,12 +31,12 @@ class UserTripsPresenter(private var view: UserTripsContract.View, private var u
         view.startAddTripActivity()
     }
 
-    override fun startBeaconClicked() {
-        view.startBeacon()
-        view.startMapActivity()
+    override fun startBeaconClicked(tripId: String) {
+        view.startBeacon(tripId)
+        view.startMapActivity(tripId)
     }
 
-    override fun dontStartBeaconClicked() {
-        view.startMapActivity()
+    override fun dontStartBeaconClicked(tripId: String) {
+        view.startMapActivity(tripId)
     }
 }
