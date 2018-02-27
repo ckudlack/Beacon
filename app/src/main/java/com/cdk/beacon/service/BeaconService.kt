@@ -12,6 +12,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.PersistableBundle
 import android.support.v4.app.NotificationCompat
 import com.cdk.beacon.DateTimeUtils
 import com.cdk.beacon.R
@@ -46,6 +47,8 @@ class BeaconService : JobService() {
     private fun getLocation(jobParams: JobParameters) {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
+        val tripId = jobParams.extras.get(TRIP_ID) as String
+
         callback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
                 if (locationResult != null) {
@@ -56,7 +59,7 @@ class BeaconService : JobService() {
                         val latitude = location.latitude
                         val longitude = location.longitude
 
-                        sendLocationToFirebase(latitude, longitude)
+                        sendLocationToFirebase(latitude, longitude, tripId)
                         removeListenerAndFinishJob(jobParams)
                     }
                 } else {
@@ -101,13 +104,12 @@ class BeaconService : JobService() {
         jobFinished(jobParams, false)
     }
 
-    private fun sendLocationToFirebase(latitude: Double, longitude: Double) {
+    private fun sendLocationToFirebase(latitude: Double, longitude: Double, tripId: String) {
         // Send these to Firebase
 
         val currentTimeMillis = System.currentTimeMillis()
         val database = FirebaseDatabase.getInstance()
         val locationReference = database.reference
-        val tripId = id
 
         toast("Sent location")
 
@@ -119,16 +121,6 @@ class BeaconService : JobService() {
         ref.setValue(MyLocation(latitude, longitude, currentTimeMillis))
 
         sendNotification("Location sent at " + DateTimeUtils.formatWithWeekday(this, currentTimeMillis))
-
-//        locationReference.child("trips").child(FirebaseAuth.getInstance().currentUser!!.uid).child(tripId).child("locationId").setValue(ref.key)
-
-        /*val uid = FirebaseAuth.getInstance().currentUser?.uid
-
-        val database = FirebaseDatabase.getInstance()
-        val locationReference = database.getReference("users")
-
-        val key = locationReference.push().key
-        locationReference.child(key).setValue("blah")*/
     }
 
     private fun createLocationRequest(): LocationRequest {
@@ -165,24 +157,26 @@ class BeaconService : JobService() {
 
     companion object {
 
-        private val JOB_ID = 123
-        private val ONE_HOUR = 60 * 60 * 1000L
-        private val TEN_SEC = 5 * 1000L
-        private lateinit var id: String
+        private const val JOB_ID = 123
+        private const val ONE_HOUR = 60 * 60 * 1000L
+        private const val TRIP_ID = "trip_id"
 
         // There is a minimum period of 15 mins for a periodic JobService
         fun schedule(context: Context, tripId: String) {
             val componentName = ComponentName(context, BeaconService::class.java)
+
+            val bundle = PersistableBundle()
+            bundle.putString(TRIP_ID, tripId)
+
             val builder = JobInfo.Builder(JOB_ID, componentName)
                     .setPeriodic(12 * ONE_HOUR)
                     .setRequiresCharging(false)
                     .setRequiredNetworkType(NETWORK_TYPE_ANY)
+                    .setExtras(bundle)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder.setRequiresBatteryNotLow(true)
             }
-
-            id = tripId
 
             val scheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
             scheduler.schedule(builder.build())
