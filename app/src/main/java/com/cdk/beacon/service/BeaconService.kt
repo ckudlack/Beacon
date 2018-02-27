@@ -10,7 +10,6 @@ import android.app.job.JobScheduler
 import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.PersistableBundle
 import android.support.v4.app.NotificationCompat
@@ -26,10 +25,6 @@ class BeaconService : JobService() {
 
     private var callback: LocationCallback? = null
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
-    override fun startService(service: Intent?): ComponentName {
-        return super.startService(service)
-    }
 
     override fun onStartJob(params: JobParameters): Boolean {
         // Get location, send to server
