@@ -3,13 +3,21 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:orientation="vertical">
+              android:orientation="horizontal">
 
     <TextView
         android:id="@+id/trip_name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:textSize="18sp"
         tools:text="TextView"/>
+
+    <ImageView
+        android:id="@+id/trip_active"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|end"
+        android:src="@drawable/ic_location_on_red"
+        tools:src="@drawable/amu_bubble_shadow"/>
 </LinearLayout>

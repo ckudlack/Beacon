@@ -1,5 +1,7 @@
 package com.cdk.beacon.ui
 
+import android.app.job.JobScheduler
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -29,9 +31,11 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trips)
 
+        val scheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+
         firebaseAuth = FirebaseAuth.getInstance()
         presenter = UserTripsPresenter(this, TripsUseCase(UserTripsRepository(FirebaseDatabase.getInstance())))
-        adapter = TripsAdapter(this)
+        adapter = TripsAdapter(this, if (scheduler.allPendingJobs.size == 0) null else scheduler.allPendingJobs[0])
         trips_list.adapter = adapter
         trips_list.layoutManager = LinearLayoutManager(this)
 
@@ -71,10 +75,14 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
         BeaconService.schedule(this, tripId)
     }
 
-    override fun onTripClicked(tripId: String) {
+    override fun showAlertDialog(tripId: String) {
         alert("Start broadcasting your trip?", "The beacon is not lit") {
             yesButton { presenter.startBeaconClicked(tripId) }
             noButton { presenter.dontStartBeaconClicked(tripId) }
         }.show()
+    }
+
+    override fun onTripClicked(tripId: String, isActive: Boolean) {
+        presenter.tripClicked(tripId, isActive)
     }
 }

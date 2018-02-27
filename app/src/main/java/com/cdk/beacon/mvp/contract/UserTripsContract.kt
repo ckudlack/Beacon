@@ -11,6 +11,7 @@ interface UserTripsContract {
         fun addTripClicked()
         fun startBeaconClicked(tripId: String)
         fun dontStartBeaconClicked(tripId: String)
+        fun tripClicked(tripId: String, isActive: Boolean)
     }
 
     interface View : BaseView {
@@ -18,5 +19,6 @@ interface UserTripsContract {
         fun startAddTripActivity()
         fun startMapActivity(tripId: String)
         fun startBeacon(tripId: String)
+        fun showAlertDialog(tripId: String)
     }
 }

@@ -39,4 +39,11 @@ class UserTripsPresenter(private var view: UserTripsContract.View, private var u
     override fun dontStartBeaconClicked(tripId: String) {
         view.startMapActivity(tripId)
     }
+
+    override fun tripClicked(tripId: String, isActive: Boolean) {
+        when {
+            !isActive -> view.showAlertDialog(tripId)
+            else -> view.startMapActivity(tripId)
+        }
+    }
 }
