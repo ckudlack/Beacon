@@ -9,9 +9,10 @@ interface UserTripsContract {
     interface Presenter : BasePresenter {
         fun getTrips(userId: String)
         fun addTripClicked()
-        fun startBeaconClicked(tripId: String)
+        fun startBeaconClicked(tripId: String, isPermissionGranted: Boolean)
         fun dontStartBeaconClicked(tripId: String)
         fun tripClicked(tripId: String, isActive: Boolean)
+        fun onPermissionResult(tripId: String?, isGranted: Boolean)
     }
 
     interface View : BaseView {
@@ -20,5 +21,6 @@ interface UserTripsContract {
         fun startMapActivity(tripId: String)
         fun startBeacon(tripId: String)
         fun showAlertDialog(tripId: String)
+        fun requestPermissions(tripId: String)
     }
 }

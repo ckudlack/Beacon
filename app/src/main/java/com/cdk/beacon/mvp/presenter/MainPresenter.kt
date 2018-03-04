@@ -15,25 +15,11 @@ class MainPresenter(private var view: MainContract.View) : MainContract.Presente
         if (email == null) {
             view.startLoginActivity()
         } else {
-            view.startMapActivity()
+            view.startTripsActivity()
         }
     }
 
     override fun onDestroy() {
-    }
-
-    override fun onStartButtonClicked(permissionsGranted: Boolean) {
-        if (permissionsGranted) {
-            view.scheduleBeaconService()
-        } else {
-            view.requestPermissions()
-        }
-    }
-
-    override fun onPermissionsGranted(granted: Boolean) {
-        if (granted) {
-            view.scheduleBeaconService()
-        }
     }
 
     override fun onLogOutClicked() {

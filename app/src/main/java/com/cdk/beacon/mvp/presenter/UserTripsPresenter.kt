@@ -31,9 +31,13 @@ class UserTripsPresenter(private var view: UserTripsContract.View, private var u
         view.startAddTripActivity()
     }
 
-    override fun startBeaconClicked(tripId: String) {
-        view.startBeacon(tripId)
-        view.startMapActivity(tripId)
+    override fun startBeaconClicked(tripId: String, isPermissionGranted: Boolean) {
+        if (isPermissionGranted) {
+            view.startBeacon(tripId)
+            view.startMapActivity(tripId)
+        } else {
+            view.requestPermissions(tripId)
+        }
     }
 
     override fun dontStartBeaconClicked(tripId: String) {
@@ -44,6 +48,15 @@ class UserTripsPresenter(private var view: UserTripsContract.View, private var u
         when {
             !isActive -> view.showAlertDialog(tripId)
             else -> view.startMapActivity(tripId)
+        }
+    }
+
+    override fun onPermissionResult(tripId: String?, isGranted: Boolean) {
+        if (isGranted) {
+            tripId?.let {
+                view.startBeacon(tripId)
+                view.startMapActivity(tripId)
+            }
         }
     }
 }

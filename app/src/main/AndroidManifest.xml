@@ -38,9 +38,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cdk.beacon.ui.MainActivity"/>
         </activity>
-        <activity android:name=".ui.TripsActivity">
-        </activity>
-        <activity android:name=".ui.NewTripActivity">
+        <activity
+            android:name=".ui.TripsActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.NewTripActivity"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

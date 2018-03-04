@@ -6,8 +6,6 @@ import com.cdk.beacon.ui.BaseView
 interface MainContract {
 
     interface Presenter : BasePresenter {
-        fun onStartButtonClicked(permissionsGranted: Boolean)
-        fun onPermissionsGranted(granted: Boolean)
         fun onLogOutClicked()
         fun onStart(email : String?)
     }
@@ -17,7 +15,7 @@ interface MainContract {
         fun scheduleBeaconService()
         fun requestPermissions()
         fun logOut()
-        fun startMapActivity()
+        fun startTripsActivity()
         fun close()
     }
 }

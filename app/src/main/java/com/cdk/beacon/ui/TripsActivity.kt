@@ -1,8 +1,12 @@
 package com.cdk.beacon.ui
 
+import android.Manifest
 import android.app.job.JobScheduler
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.cdk.beacon.R
@@ -26,6 +30,8 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     private lateinit var presenter: UserTripsContract.Presenter
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var adapter: TripsAdapter
+
+    private var tripId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,13 +82,32 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     }
 
     override fun showAlertDialog(tripId: String) {
-        alert("Start broadcasting your trip?", "The beacon is not lit") {
-            yesButton { presenter.startBeaconClicked(tripId) }
+        alert("This will pause any other active trip", "Start broadcasting?") {
+            yesButton {
+                presenter.startBeaconClicked(tripId, ContextCompat.checkSelfPermission(baseContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                        ContextCompat.checkSelfPermission(baseContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            }
             noButton { presenter.dontStartBeaconClicked(tripId) }
         }.show()
     }
 
+    override fun requestPermissions(tripId: String) {
+        this.tripId = tripId
+        ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_CODE)
+    }
+
     override fun onTripClicked(tripId: String, isActive: Boolean) {
         presenter.tripClicked(tripId, isActive)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        presenter.onPermissionResult(this.tripId, requestCode == LOCATION_PERMISSION_CODE && grantResults.isNotEmpty()
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_CODE = 1234
     }
 }

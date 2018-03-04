@@ -1,10 +1,9 @@
 package com.cdk.beacon.ui
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -12,39 +11,23 @@ import com.cdk.beacon.R
 import com.cdk.beacon.mvp.contract.MainContract
 import com.cdk.beacon.mvp.presenter.MainPresenter
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.startActivity
 
 @Suppress("unused")
 class MainActivity : AppCompatActivity(), MainContract.View {
 
-    private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var presenter: MainContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        firebaseAuth = FirebaseAuth.getInstance()
         presenter = MainPresenter(this)
-
-        start.setOnClickListener({ startButtonClicked() })
-        map.setOnClickListener({ startActivity<MapActivity>() })
     }
 
     override fun onStart() {
         super.onStart()
-        presenter.onStart(firebaseAuth.currentUser?.email)
-    }
-
-    private fun startButtonClicked() {
-        presenter.onStartButtonClicked(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        presenter.onPermissionsGranted(requestCode == LOCATION_PERMISSION_CODE && grantResults.isNotEmpty()
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        presenter.onStart(FirebaseAuth.getInstance().currentUser?.email)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -96,8 +79,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 LOCATION_PERMISSION_CODE)
     }
 
-    override fun startMapActivity() {
-//        startActivity<MapActivity>()
+    override fun startTripsActivity() {
         startActivity<TripsActivity>()
     }
 
