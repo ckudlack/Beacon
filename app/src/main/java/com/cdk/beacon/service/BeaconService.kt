@@ -174,6 +174,8 @@ class BeaconService : JobService() {
             }
 
             val scheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+
+            scheduler.cancelAll()
             scheduler.schedule(builder.build())
         }
     }
