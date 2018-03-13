@@ -33,9 +33,8 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.trip_done -> {
-                val userId = (FirebaseAuth.getInstance().currentUser?.uid
-                        ?: "")
-                presenter.addTrip(userId, BeaconTrip(ArrayList(), trip_name_edittext.text.toString(), listOf(email_to_share.text.toString()), userId))
+                val userId = (FirebaseAuth.getInstance().currentUser?.uid ?: "")
+                presenter.addTrip(userId, BeaconTrip(ArrayList(), trip_name_edittext.text.toString(), listOf(email_to_share.text.toString()), "", userId))
             }
         }
         return super.onOptionsItemSelected(item)
