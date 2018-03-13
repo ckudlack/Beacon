@@ -17,7 +17,7 @@ import com.cdk.beacon.DateTimeUtils
 import com.cdk.beacon.R
 import com.cdk.beacon.data.MyLocation
 import com.google.android.gms.location.*
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import org.jetbrains.anko.toast
 
 
@@ -103,17 +103,13 @@ class BeaconService : JobService() {
         // Send these to Firebase
 
         val currentTimeMillis = System.currentTimeMillis()
-        val database = FirebaseDatabase.getInstance()
-        val locationReference = database.reference
+        val database = FirebaseFirestore.getInstance()
 
         toast("Sent location")
 
-        val ref = locationReference
-                .child("beacons")
-                .child(tripId)
-                .push()
-
-        ref.setValue(MyLocation(latitude, longitude, currentTimeMillis))
+        database.collection("beacons")
+                .document(tripId)
+                .set(MyLocation(latitude, longitude, currentTimeMillis))
 
         sendNotification("Location sent at " + DateTimeUtils.formatWithWeekday(this, currentTimeMillis))
     }

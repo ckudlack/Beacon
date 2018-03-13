@@ -11,11 +11,9 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import com.cdk.beacon.R
-import com.cdk.beacon.data.BeaconUser
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.textResource
 import org.jetbrains.anko.toast
@@ -136,8 +134,9 @@ class LoginActivity : AppCompatActivity() {
         if (task.isSuccessful) {
             val user = task.result.user
 
+            // TODO: Do this with a DB trigger instead
             // add the user to the Firebase DB (separate from the Firebase Auth DB)
-            FirebaseDatabase.getInstance().reference.child("users").child(user.uid).setValue(BeaconUser(user.displayName, user.email, ArrayList()))
+//            FirebaseDatabase.getInstance().reference.child("users").child(user.uid).setValue(BeaconUser(user.displayName, user.email, ArrayList()))
         }
     }
 

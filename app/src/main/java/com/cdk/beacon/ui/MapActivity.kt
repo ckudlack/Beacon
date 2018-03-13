@@ -16,7 +16,7 @@ import com.cdk.bettermapsearch.clustering.MapPagerMarkerRenderer
 import com.cdk.bettermapsearch.interfaces.MapReadyCallback
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContract.View {
 
@@ -27,8 +27,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
-        val database = FirebaseDatabase.getInstance()
-        presenter = MapPresenter(this, MapUseCase(LocationRepository(database)))
+        presenter = MapPresenter(this, MapUseCase(LocationRepository(FirebaseFirestore.getInstance())))
 
         mapPagerView = findViewById(R.id.map_pager)
         mapPagerView.onCreate(savedInstanceState)

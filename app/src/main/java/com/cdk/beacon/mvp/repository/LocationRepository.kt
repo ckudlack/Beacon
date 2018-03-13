@@ -2,14 +2,15 @@ package com.cdk.beacon.mvp.repository
 
 import com.cdk.beacon.data.MyLocation
 import com.cdk.beacon.mvp.contract.MapDataContract
-import com.google.firebase.database.FirebaseDatabase
-import com.kelvinapps.rxfirebase.RxFirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import rx.Observable
 
-class LocationRepository(private val database: FirebaseDatabase) : MapDataContract.Repository {
+class LocationRepository(private val database: FirebaseFirestore) : MapDataContract.Repository {
 
     override fun getLocationList(sortByValue: String, tripId: String): Observable<List<MyLocation>> {
-        return RxFirebaseDatabase.observeValueEvent(database.reference.child("beacons").child(tripId).orderByChild(sortByValue)).flatMap { dataSnapshotRxFirebaseChildEvent ->
+        // TODO: Update this call to Cloud Firestore
+        return Observable.empty()
+        /*return RxFirebaseDatabase.observeValueEvent(database.reference.child("beacons").child(tripId).orderByChild(sortByValue)).flatMap { dataSnapshotRxFirebaseChildEvent ->
             val locationList = ArrayList<MyLocation>()
             dataSnapshotRxFirebaseChildEvent.children.forEach {
                 val location = it.value as Map<*, *>
@@ -24,7 +25,7 @@ class LocationRepository(private val database: FirebaseDatabase) : MapDataContra
             }
 
             Observable.just(locationList)
-        }
+        }*/
     }
 }
 

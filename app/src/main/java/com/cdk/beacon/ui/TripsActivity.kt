@@ -18,7 +18,7 @@ import com.cdk.beacon.mvp.repository.UserTripsRepository
 import com.cdk.beacon.mvp.usecase.TripsUseCase
 import com.cdk.beacon.service.BeaconService
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_trips.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -40,7 +40,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
         val scheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
 
         firebaseAuth = FirebaseAuth.getInstance()
-        presenter = UserTripsPresenter(this, TripsUseCase(UserTripsRepository(FirebaseDatabase.getInstance())))
+        presenter = UserTripsPresenter(this, TripsUseCase(UserTripsRepository(FirebaseFirestore.getInstance())))
         adapter = TripsAdapter(this, if (scheduler.allPendingJobs.size == 0) null else scheduler.allPendingJobs[0])
         trips_list.adapter = adapter
         trips_list.layoutManager = LinearLayoutManager(this)

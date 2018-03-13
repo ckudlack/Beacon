@@ -11,7 +11,7 @@ import com.cdk.beacon.mvp.presenter.NewTripPresenter
 import com.cdk.beacon.mvp.repository.UserTripsRepository
 import com.cdk.beacon.mvp.usecase.NewTripUseCase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_new_trip.*
 
 class NewTripActivity : AppCompatActivity(), NewTripContract.View {
@@ -22,7 +22,7 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_trip)
 
-        presenter = NewTripPresenter(NewTripUseCase(UserTripsRepository(FirebaseDatabase.getInstance())), this)
+        presenter = NewTripPresenter(NewTripUseCase(UserTripsRepository(FirebaseFirestore.getInstance())), this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -34,7 +34,7 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View {
         when (item?.itemId) {
             R.id.trip_done -> {
                 val userId = (FirebaseAuth.getInstance().currentUser?.uid ?: "")
-                presenter.addTrip(userId, BeaconTrip(ArrayList(), trip_name_edittext.text.toString(), listOf(email_to_share.text.toString()), "", userId))
+                presenter.addTrip(userId, BeaconTrip(ArrayList(), trip_name_edittext.text.toString(), mapOf(Pair("", email_to_share.text.toString())), "", userId))
             }
         }
         return super.onOptionsItemSelected(item)

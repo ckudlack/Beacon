@@ -2,8 +2,8 @@ package com.cdk.beacon.data
 
 import com.cdk.bettermapsearch.interfaces.MapClusterItem
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.database.Exclude
-import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 data class MyLocation(val longitude: Double, val latitude: Double, val timeStamp: Long) : MapClusterItem {
