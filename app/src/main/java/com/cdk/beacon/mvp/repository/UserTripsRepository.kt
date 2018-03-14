@@ -41,4 +41,18 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
             Observable.just(BeaconTrip(mutableListOf(), name, mapOf(), tripId, userId))
         }
     }
+
+    override fun getTripsSharedWithMe(userId: String, userEmail: String): Observable<MutableList<BeaconTrip>> {
+        return RxFirestoreDatabase.getSingleValue(database.collection("trips").whereEqualTo("observers.$userEmail", true).get()).flatMap { querySnapshot ->
+            val tripList = mutableListOf<BeaconTrip>()
+            querySnapshot.documents.forEach {
+                val dataMap = it.data
+                val name = dataMap["name"] as String
+//                val observers = dataMap["observers"] as Map<String, Boolean>
+
+                tripList.add(BeaconTrip(mutableListOf(), name, mapOf(), it.id, userId))
+            }
+            Observable.just(tripList)
+        }
+    }
 }
