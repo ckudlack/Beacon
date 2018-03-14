@@ -107,9 +107,10 @@ class BeaconService : JobService() {
 
         toast("Sent location")
 
-        database.collection("beacons")
+        database.collection("locations")
                 .document(tripId)
-                .set(MyLocation(latitude, longitude, currentTimeMillis))
+                .collection("beacons")
+                .add(MyLocation(longitude, latitude, currentTimeMillis))
 
         sendNotification("Location sent at " + DateTimeUtils.formatWithWeekday(this, currentTimeMillis))
     }
