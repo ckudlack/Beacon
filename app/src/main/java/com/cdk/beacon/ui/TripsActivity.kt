@@ -27,14 +27,14 @@ import org.jetbrains.anko.noButton
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.yesButton
 
-class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.TripClickedCallback, TripListDialogFragment.Listener {
+class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.TripClickedCallback, FilterListDialogFragment.Listener {
 
     private lateinit var presenter: UserTripsContract.Presenter
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var adapter: TripsAdapter
 
     private var tripId: String? = null
-    private var filterDialog: TripListDialogFragment? = null
+    private var filterDialog: FilterListDialogFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +45,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
         firebaseAuth = FirebaseAuth.getInstance()
         presenter = UserTripsPresenter(this, TripsUseCase(UserTripsRepository(FirebaseFirestore.getInstance())))
         adapter = TripsAdapter(this, if (scheduler.allPendingJobs.size == 0) null else scheduler.allPendingJobs[0])
-        filterDialog = TripListDialogFragment.newInstance()
+        filterDialog = FilterListDialogFragment.newInstance()
 
         trips_list.adapter = adapter
         trips_list.layoutManager = LinearLayoutManager(this)
@@ -119,11 +119,11 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
                 LOCATION_PERMISSION_CODE)
     }
 
-    override fun onTripClicked(tripId: String, isActive: Boolean) {
-        presenter.tripClicked(tripId, isActive)
+    override fun onTripClicked(tripId: String, userId: String, isActive: Boolean) {
+        presenter.tripClicked(tripId, isActive, userId == firebaseAuth.currentUser?.uid)
     }
 
-    override fun onTripClicked(position: Int) {
+    override fun onFilterItemClicked(position: Int) {
         filterDialog?.dismiss()
         firebaseAuth.currentUser?.let {
             presenter.getTrips(it.uid, it.email ?: "", position)

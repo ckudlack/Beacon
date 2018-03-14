@@ -8,6 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import rx.Observable
 
 class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDataContract.Repository {
+
     override fun getAllTrips(userId: String, userEmail: String): Observable<MutableList<BeaconTrip>> {
         return Observable.combineLatest(getMyTrips(userId), getTripsSharedWithMe(userId, userEmail), { list1: MutableList<BeaconTrip>, list2: MutableList<BeaconTrip> ->
             val combinedList = mutableListOf<BeaconTrip>()

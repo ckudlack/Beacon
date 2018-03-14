@@ -11,7 +11,7 @@ interface UserTripsContract {
         fun addTripClicked()
         fun startBeaconClicked(tripId: String, isPermissionGranted: Boolean)
         fun dontStartBeaconClicked(tripId: String)
-        fun tripClicked(tripId: String, isActive: Boolean)
+        fun tripClicked(tripId: String, isActive: Boolean, isUsersTrip: Boolean)
         fun onPermissionResult(tripId: String?, isGranted: Boolean)
     }
 

@@ -9,18 +9,18 @@ import android.view.ViewGroup
 import com.cdk.beacon.R
 import kotlinx.android.synthetic.main.fragment_trip_list_dialog.*
 
-class TripListDialogFragment : BottomSheetDialogFragment() {
+class FilterListDialogFragment : BottomSheetDialogFragment() {
     private var mListener: Listener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_trip_list_dialog, container, false)
+        return inflater.inflate(R.layout.fragment_filter_list_dialog, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        all_trips.setOnClickListener { mListener?.onTripClicked(0) }
-        my_trips.setOnClickListener { mListener?.onTripClicked(1) }
-        shared_trips.setOnClickListener { mListener?.onTripClicked(2) }
+        all_trips.setOnClickListener { mListener?.onFilterItemClicked(0) }
+        my_trips.setOnClickListener { mListener?.onFilterItemClicked(1) }
+        shared_trips.setOnClickListener { mListener?.onFilterItemClicked(2) }
     }
 
     override fun onAttach(context: Context) {
@@ -34,10 +34,10 @@ class TripListDialogFragment : BottomSheetDialogFragment() {
     }
 
     interface Listener {
-        fun onTripClicked(position: Int)
+        fun onFilterItemClicked(position: Int)
     }
 
     companion object {
-        fun newInstance(): TripListDialogFragment = TripListDialogFragment()
+        fun newInstance(): FilterListDialogFragment = FilterListDialogFragment()
     }
 }

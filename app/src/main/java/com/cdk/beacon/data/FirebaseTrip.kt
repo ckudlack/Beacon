@@ -3,6 +3,7 @@ package com.cdk.beacon.data
 /**
  * This exists to protect local data classes from changes on the server-side data
  */
+@Suppress("unused")
 data class FirebaseTrip(val name: String, val userId: String, val observers: Map<String, Boolean>?) {
     // This needs to be used by Firebase to create the object
     constructor() : this("", "", mapOf())

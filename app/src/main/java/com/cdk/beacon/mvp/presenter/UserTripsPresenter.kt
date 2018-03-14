@@ -44,8 +44,9 @@ class UserTripsPresenter(private var view: UserTripsContract.View, private var u
         view.startMapActivity(tripId)
     }
 
-    override fun tripClicked(tripId: String, isActive: Boolean) {
+    override fun tripClicked(tripId: String, isActive: Boolean, isUsersTrip: Boolean) {
         when {
+            !isUsersTrip -> view.startMapActivity(tripId)
             !isActive -> view.showAlertDialog(tripId)
             else -> view.startMapActivity(tripId)
         }
