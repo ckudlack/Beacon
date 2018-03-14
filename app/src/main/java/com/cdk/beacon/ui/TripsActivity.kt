@@ -9,6 +9,8 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.view.Menu
+import android.view.MenuItem
 import com.cdk.beacon.R
 import com.cdk.beacon.TripsAdapter
 import com.cdk.beacon.data.BeaconTrip
@@ -20,18 +22,16 @@ import com.cdk.beacon.service.BeaconService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_trips.*
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.noButton
-import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.yesButton
+import org.jetbrains.anko.*
 
-class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.TripClickedCallback {
+class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.TripClickedCallback, TripListDialogFragment.Listener {
 
     private lateinit var presenter: UserTripsContract.Presenter
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var adapter: TripsAdapter
 
     private var tripId: String? = null
+    private var filterDialog: TripListDialogFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +42,8 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
         firebaseAuth = FirebaseAuth.getInstance()
         presenter = UserTripsPresenter(this, TripsUseCase(UserTripsRepository(FirebaseFirestore.getInstance())))
         adapter = TripsAdapter(this, if (scheduler.allPendingJobs.size == 0) null else scheduler.allPendingJobs[0])
+        filterDialog = TripListDialogFragment.newInstance()
+
         trips_list.adapter = adapter
         trips_list.layoutManager = LinearLayoutManager(this)
 
@@ -51,6 +53,20 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     override fun onStart() {
         super.onStart()
         presenter.getTrips(firebaseAuth.currentUser?.uid ?: "")
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.trips, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_filter -> {
+                filterDialog?.show(supportFragmentManager, "dialog")
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun showLoading() {
@@ -100,6 +116,11 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
 
     override fun onTripClicked(tripId: String, isActive: Boolean) {
         presenter.tripClicked(tripId, isActive)
+    }
+
+    override fun onTripClicked(position: Int) {
+        toast("Item $position clicked")
+        filterDialog?.dismiss()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
