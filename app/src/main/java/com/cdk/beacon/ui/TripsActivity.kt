@@ -22,7 +22,10 @@ import com.cdk.beacon.service.BeaconService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_trips.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.yesButton
 
 class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.TripClickedCallback, TripListDialogFragment.Listener {
 
@@ -52,7 +55,9 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
 
     override fun onStart() {
         super.onStart()
-        presenter.getTrips(firebaseAuth.currentUser?.uid ?: "")
+        firebaseAuth.currentUser?.let {
+            presenter.getTrips(it.uid, it.email ?: "", 0)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -119,8 +124,10 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     }
 
     override fun onTripClicked(position: Int) {
-        toast("Item $position clicked")
         filterDialog?.dismiss()
+        firebaseAuth.currentUser?.let {
+            presenter.getTrips(it.uid, it.email ?: "", position)
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

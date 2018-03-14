@@ -8,6 +8,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import rx.Observable
 
 class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDataContract.Repository {
+    override fun getAllTrips(userId: String, userEmail: String): Observable<MutableList<BeaconTrip>> {
+        return Observable.combineLatest(getMyTrips(userId), getTripsSharedWithMe(userId, userEmail), { list1: MutableList<BeaconTrip>, list2: MutableList<BeaconTrip> ->
+            val combinedList = mutableListOf<BeaconTrip>()
+            combinedList.addAll(list1)
+            combinedList.addAll(list2)
+            combinedList
+        })
+    }
 
     override fun addTrip(userId: String, trip: BeaconTrip): Observable<List<BeaconTrip>> {
         return RxFirestoreDatabase.addValue(database.collection("trips").add(trip.toFirebaseTrip())).flatMap { isSuccessful ->
@@ -38,7 +46,8 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
     }
 
     override fun getTripsSharedWithMe(userId: String, userEmail: String): Observable<MutableList<BeaconTrip>> {
-        return RxFirestoreDatabase.getSingleValue(database.collection("trips").whereEqualTo("observers.$userEmail", true).get()).flatMap { querySnapshot ->
+        val sanitizedEmail = sanitizeEmailToFirebaseName(userEmail)
+        return RxFirestoreDatabase.getSingleValue(database.collection("trips").whereEqualTo("observers.$sanitizedEmail", true).get()).flatMap { querySnapshot ->
             val tripList = mutableListOf<BeaconTrip>()
             querySnapshot.documents.forEach {
                 val firebaseTrip = it.toObject(FirebaseTrip::class.java)
@@ -46,5 +55,10 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
             }
             Observable.just(tripList)
         }
+    }
+
+    private fun sanitizeEmailToFirebaseName(string: String): String {
+        val lastIndexOf = string.lastIndexOf('.')
+        return string.replaceRange(lastIndexOf, lastIndexOf + 1, "@")
     }
 }

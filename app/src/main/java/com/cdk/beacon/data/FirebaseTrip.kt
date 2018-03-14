@@ -9,7 +9,14 @@ data class FirebaseTrip(val name: String, val userId: String, val observers: Map
 
     fun toBeaconTrip(tripId: String): BeaconTrip {
         val observersList = mutableListOf<String>()
-        observers?.forEach { observersList.add(it.key) }
+        observers?.forEach {
+            observersList.add(sanitizeFirebaseNameToEmail(it.key))
+        }
         return BeaconTrip(mutableListOf(), name, observersList, tripId, userId)
+    }
+
+    private fun sanitizeFirebaseNameToEmail(string: String): String {
+        val lastIndexOf = string.lastIndexOf('@')
+        return string.replaceRange(lastIndexOf, lastIndexOf + 1, ".")
     }
 }

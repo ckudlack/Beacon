@@ -11,5 +11,6 @@ interface UserTripsDataContract {
         fun getTrip(tripId: String): Observable<BeaconTrip>
         fun addTrip(userId: String, trip: BeaconTrip): Observable<List<BeaconTrip>>
         fun getTripsSharedWithMe(userId: String, userEmail: String): Observable<MutableList<BeaconTrip>>
+        fun getAllTrips(userId: String, userEmail: String): Observable<MutableList<BeaconTrip>>
     }
 }

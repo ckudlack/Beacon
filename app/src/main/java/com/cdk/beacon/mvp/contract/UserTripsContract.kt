@@ -7,7 +7,7 @@ import com.cdk.beacon.ui.BaseView
 interface UserTripsContract {
 
     interface Presenter : BasePresenter {
-        fun getTrips(userId: String)
+        fun getTrips(userId: String, userEmail: String, filterPosition: Int)
         fun addTripClicked()
         fun startBeaconClicked(tripId: String, isPermissionGranted: Boolean)
         fun dontStartBeaconClicked(tripId: String)

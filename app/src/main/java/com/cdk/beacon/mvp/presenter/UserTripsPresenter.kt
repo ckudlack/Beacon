@@ -17,9 +17,9 @@ class UserTripsPresenter(private var view: UserTripsContract.View, private var u
     override fun onDestroy() {
     }
 
-    override fun getTrips(userId: String) {
+    override fun getTrips(userId: String, userEmail: String, filterPosition: Int) {
         view.showLoading()
-        useCase.getTrips(userId, object : DefaultSubscriber<MutableList<BeaconTrip>>() {
+        useCase.getTrips(userId, userEmail, filterPosition, object : DefaultSubscriber<MutableList<BeaconTrip>>() {
             override fun onNext(t: MutableList<BeaconTrip>) {
                 view.showTrips(t)
                 view.hideLoading()
