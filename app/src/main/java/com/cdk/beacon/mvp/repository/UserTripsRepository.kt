@@ -2,6 +2,7 @@ package com.cdk.beacon.mvp.repository
 
 import com.cdk.beacon.RxFirestoreDatabase
 import com.cdk.beacon.data.BeaconTrip
+import com.cdk.beacon.data.FirebaseTrip
 import com.cdk.beacon.mvp.contract.UserTripsDataContract
 import com.google.firebase.firestore.FirebaseFirestore
 import rx.Observable
@@ -9,8 +10,9 @@ import rx.Observable
 class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDataContract.Repository {
 
     override fun addTrip(userId: String, trip: BeaconTrip): Observable<List<BeaconTrip>> {
-        return RxFirestoreDatabase.addValue(database.collection("trips").add(trip)).flatMap { isSuccessful ->
+        return RxFirestoreDatabase.addValue(database.collection("trips").add(trip.toFirebaseTrip())).flatMap { isSuccessful ->
             if (isSuccessful) {
+                // do something
             }
             Observable.just(ArrayList<BeaconTrip>())
         }
@@ -20,25 +22,18 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
         return RxFirestoreDatabase.getSingleValue(database.collection("trips").whereEqualTo("userId", userId).get()).flatMap { querySnapshotRxFirestoreChildEvent ->
             val tripList = mutableListOf<BeaconTrip>()
             querySnapshotRxFirestoreChildEvent.documents.forEach {
-                val dataMap = it.data
-                val name = dataMap["name"] as String
-//                val observers = dataMap["observers"] as Map<String, Boolean>
-
-                tripList.add(BeaconTrip(mutableListOf(), name, mapOf(), it.id, userId))
+                val firebaseTrip = it.toObject(FirebaseTrip::class.java)
+                tripList.add(firebaseTrip.toBeaconTrip(it.id))
             }
-
             Observable.just(tripList)
         }
     }
 
     override fun getTrip(tripId: String): Observable<BeaconTrip> {
         return RxFirestoreDatabase.getSingleValue(database.collection("trips").whereEqualTo("tripId", tripId).get()).flatMap { dataSnapshotRxFirebaseChildEvent ->
-            val trip = dataSnapshotRxFirebaseChildEvent.documents.first().data as Map<*, *>
-            val name = trip["name"] as String
-//            val observers = trip["observers"] as List<String>
-            val userId = trip["userId"] as String
-
-            Observable.just(BeaconTrip(mutableListOf(), name, mapOf(), tripId, userId))
+            val snapshot = dataSnapshotRxFirebaseChildEvent.documents.first()
+            val trip = snapshot.toObject(FirebaseTrip::class.java)
+            Observable.just(trip.toBeaconTrip(snapshot.id))
         }
     }
 
@@ -46,11 +41,8 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
         return RxFirestoreDatabase.getSingleValue(database.collection("trips").whereEqualTo("observers.$userEmail", true).get()).flatMap { querySnapshot ->
             val tripList = mutableListOf<BeaconTrip>()
             querySnapshot.documents.forEach {
-                val dataMap = it.data
-                val name = dataMap["name"] as String
-//                val observers = dataMap["observers"] as Map<String, Boolean>
-
-                tripList.add(BeaconTrip(mutableListOf(), name, mapOf(), it.id, userId))
+                val firebaseTrip = it.toObject(FirebaseTrip::class.java)
+                tripList.add(firebaseTrip.toBeaconTrip(it.id))
             }
             Observable.just(tripList)
         }

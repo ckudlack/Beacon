@@ -34,7 +34,7 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View {
         when (item?.itemId) {
             R.id.trip_done -> {
                 val userId = (FirebaseAuth.getInstance().currentUser?.uid ?: "")
-                presenter.addTrip(userId, BeaconTrip(ArrayList(), trip_name_edittext.text.toString(), mapOf(Pair("", email_to_share.text.toString())), "", userId))
+                presenter.addTrip(userId, BeaconTrip(ArrayList(), trip_name_edittext.text.toString(), mutableListOf(email_to_share.text.toString()), "", userId))
             }
         }
         return super.onOptionsItemSelected(item)
