@@ -17,7 +17,7 @@ class LocationRepository(private val database: FirebaseFirestore) : MapDataContr
                 val longitude = it["longitude"] as Double
                 val timestamp = it["timeStamp"] as Long
 
-                val loc = MyLocation(latitude, longitude, timestamp)
+                val loc = MyLocation(longitude, latitude, timestamp)
                 loc.index = locationList.size
                 locationList.add(loc)
             }
