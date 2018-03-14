@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.cdk.beacon.R
-import kotlinx.android.synthetic.main.fragment_trip_list_dialog.*
+import kotlinx.android.synthetic.main.fragment_filter_list_dialog.*
 
 class FilterListDialogFragment : BottomSheetDialogFragment() {
     private var mListener: Listener? = null
