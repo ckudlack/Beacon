@@ -2,6 +2,8 @@ package com.cdk.beacon.ui
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import com.cdk.beacon.LocationPagerAdapter
 import com.cdk.beacon.MyLocationMarkerRenderer
 import com.cdk.beacon.R
@@ -22,6 +24,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
 
     private lateinit var mapPagerView: MapPagerView<MyLocation>
     private lateinit var presenter: MapContract.Presenter
+    private var isUsersTrip: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +38,30 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         mapPagerView.getMapAsync(this)
         mapPagerView.setClusteringEnabled(false)
 
+        isUsersTrip = intent.getBooleanExtra("isUsersTrip", true)
         presenter.getLocations("timeStamp", intent.getStringExtra("tripId"))
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.map, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        isUsersTrip?.let {
+            menu?.findItem(R.id.action_settings)?.isVisible = it
+        }
+
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_settings -> {
+                // TODO: Go to settings activity
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {

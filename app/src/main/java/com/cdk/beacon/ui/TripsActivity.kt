@@ -33,7 +33,10 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var adapter: TripsAdapter
 
+    //TODO: Find a better way than caching these
     private var tripId: String? = null
+    private var userId: String? = null
+
     private var filterDialog: FilterListDialogFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,21 +97,21 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
         startActivity<NewTripActivity>()
     }
 
-    override fun startMapActivity(tripId: String) {
-        startActivity<MapActivity>("tripId" to tripId)
+    override fun startMapActivity(tripId: String, isUsersTrip: Boolean) {
+        startActivity<MapActivity>("tripId" to tripId, "isUsersTrip" to isUsersTrip)
     }
 
     override fun startBeacon(tripId: String) {
         BeaconService.schedule(this, tripId)
     }
 
-    override fun showAlertDialog(tripId: String) {
+    override fun showAlertDialog(tripId: String, isUsersTrip: Boolean) {
         alert("This will pause any other active trip", "Start broadcasting?") {
             yesButton {
                 presenter.startBeaconClicked(tripId, ContextCompat.checkSelfPermission(baseContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                        ContextCompat.checkSelfPermission(baseContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                        ContextCompat.checkSelfPermission(baseContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED, isUsersTrip)
             }
-            noButton { presenter.dontStartBeaconClicked(tripId) }
+            noButton { presenter.dontStartBeaconClicked(tripId, isUsersTrip) }
         }.show()
     }
 
@@ -119,7 +122,9 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
                 LOCATION_PERMISSION_CODE)
     }
 
+
     override fun onTripClicked(tripId: String, userId: String, isActive: Boolean) {
+        this.userId = userId
         presenter.tripClicked(tripId, isActive, userId == firebaseAuth.currentUser?.uid)
     }
 
@@ -131,8 +136,8 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        presenter.onPermissionResult(this.tripId, requestCode == LOCATION_PERMISSION_CODE && grantResults.isNotEmpty()
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        presenter.onPermissionResult(tripId, requestCode == LOCATION_PERMISSION_CODE && grantResults.isNotEmpty()
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED, userId == firebaseAuth.currentUser?.uid)
     }
 
     companion object {

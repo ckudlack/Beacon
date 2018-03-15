@@ -31,32 +31,32 @@ class UserTripsPresenter(private var view: UserTripsContract.View, private var u
         view.startAddTripActivity()
     }
 
-    override fun startBeaconClicked(tripId: String, isPermissionGranted: Boolean) {
+    override fun startBeaconClicked(tripId: String, isPermissionGranted: Boolean, isUsersTrip: Boolean) {
         if (isPermissionGranted) {
             view.startBeacon(tripId)
-            view.startMapActivity(tripId)
+            view.startMapActivity(tripId, isUsersTrip)
         } else {
             view.requestPermissions(tripId)
         }
     }
 
-    override fun dontStartBeaconClicked(tripId: String) {
-        view.startMapActivity(tripId)
+    override fun dontStartBeaconClicked(tripId: String, isUsersTrip: Boolean) {
+        view.startMapActivity(tripId, isUsersTrip)
     }
 
     override fun tripClicked(tripId: String, isActive: Boolean, isUsersTrip: Boolean) {
         when {
-            !isUsersTrip -> view.startMapActivity(tripId)
-            !isActive -> view.showAlertDialog(tripId)
-            else -> view.startMapActivity(tripId)
+            !isUsersTrip -> view.startMapActivity(tripId, isUsersTrip)
+            !isActive -> view.showAlertDialog(tripId, isUsersTrip)
+            else -> view.startMapActivity(tripId, isUsersTrip)
         }
     }
 
-    override fun onPermissionResult(tripId: String?, isGranted: Boolean) {
+    override fun onPermissionResult(tripId: String?, isGranted: Boolean, isUsersTrip: Boolean) {
         if (isGranted) {
             tripId?.let {
                 view.startBeacon(tripId)
-                view.startMapActivity(tripId)
+                view.startMapActivity(tripId, isUsersTrip)
             }
         }
     }
