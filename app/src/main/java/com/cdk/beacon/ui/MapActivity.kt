@@ -19,6 +19,7 @@ import com.cdk.bettermapsearch.interfaces.MapReadyCallback
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.firebase.firestore.FirebaseFirestore
+import org.jetbrains.anko.startActivity
 
 class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContract.View {
 
@@ -58,7 +59,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.action_settings -> {
-                // TODO: Go to settings activity
+                presenter.settingsButtonClicked()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -121,5 +122,9 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     override fun displayLocations(locations: List<MyLocation>) {
         mapPagerView.updateMapItems(locations, false)
         mapPagerView.moveCameraToBounds(createBoundsFromList(locations), 200)
+    }
+
+    override fun launchSettingsActivity() {
+        startActivity<TripSettingsActivity>()
     }
 }

@@ -1,12 +1,15 @@
 package com.cdk.beacon.data
 
+import android.os.Parcelable
 import com.cdk.bettermapsearch.interfaces.MapClusterItem
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties
+import kotlinx.android.parcel.Parcelize
 
 @IgnoreExtraProperties
-data class MyLocation(val longitude: Double, val latitude: Double, val timeStamp: Long) : MapClusterItem {
+@Parcelize
+data class MyLocation(val longitude: Double, val latitude: Double, val timeStamp: Long) : MapClusterItem, Parcelable {
 
     @Exclude
     var index: Int? = null

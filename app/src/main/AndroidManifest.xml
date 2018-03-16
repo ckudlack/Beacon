@@ -45,6 +45,15 @@
             android:name=".ui.NewTripActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity
+            android:name=".ui.TripSettingsActivity"
+            android:exported="true"
+            android:label="@string/title_activity_trip_settings"
+            android:parentActivityName=".ui.MapActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.cdk.beacon.ui.MapActivity"/>
+        </activity>
     </application>
 
 </manifest>

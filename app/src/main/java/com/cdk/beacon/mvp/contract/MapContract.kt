@@ -8,9 +8,11 @@ interface MapContract {
 
     interface Presenter : BasePresenter {
         fun getLocations(sortByValue: String, tripId: String)
+        fun settingsButtonClicked()
     }
 
     interface View : BaseView {
         fun displayLocations(locations: List<MyLocation>)
+        fun launchSettingsActivity()
     }
 }

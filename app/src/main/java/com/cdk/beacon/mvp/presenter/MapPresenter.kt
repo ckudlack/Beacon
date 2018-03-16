@@ -9,6 +9,10 @@ import com.cdk.beacon.mvp.usecase.MapUseCase
 
 class MapPresenter(private var view: MapContract.View, private var useCase: MapUseCase) : MapContract.Presenter {
 
+    override fun settingsButtonClicked() {
+        view.launchSettingsActivity()
+    }
+
     override fun getLocations(sortByValue: String, tripId: String) {
         useCase.getLocationList(sortByValue, tripId, object : DefaultSubscriber<List<MyLocation>>() {
             override fun onNext(myLocations: List<MyLocation>) {
