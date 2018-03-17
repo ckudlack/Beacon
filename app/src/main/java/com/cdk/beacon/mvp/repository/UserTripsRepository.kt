@@ -5,6 +5,7 @@ import com.cdk.beacon.data.BeaconTrip
 import com.cdk.beacon.data.FirebaseTrip
 import com.cdk.beacon.mvp.contract.UserTripsDataContract
 import com.google.firebase.firestore.FirebaseFirestore
+import rx.Completable
 import rx.Observable
 
 class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDataContract.Repository {
@@ -56,6 +57,17 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
             }
             Observable.just(tripList)
         }
+    }
+
+    override fun setTripName(tripId: String, name: String): Completable {
+        return RxFirestoreDatabase.updateValue(database.collection("trips").document(tripId).update("name", name)).toCompletable()
+    }
+
+    override fun setSharedUsers(tripId: String, sharedUsers: List<String>): Completable {
+        val observerMap = mutableMapOf<String, Boolean>()
+        sharedUsers.forEach { observerMap[it] = true }
+
+        return RxFirestoreDatabase.updateValue(database.collection("trips").document(tripId).update("observers", observerMap)).toCompletable()
     }
 
     private fun sanitizeEmailToFirebaseName(string: String): String {

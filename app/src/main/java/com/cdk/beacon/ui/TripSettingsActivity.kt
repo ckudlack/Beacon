@@ -1,5 +1,6 @@
 package com.cdk.beacon.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.ListPreference
@@ -9,10 +10,17 @@ import android.support.v7.preference.PreferenceManager
 import android.view.MenuItem
 import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip
+import com.cdk.beacon.mvp.contract.TripSettingsContract
+import com.cdk.beacon.mvp.presenter.TripSettingsPresenter
+import com.cdk.beacon.mvp.repository.UserTripsRepository
+import com.cdk.beacon.mvp.usecase.TripSettingsUseCase
+import com.google.firebase.firestore.FirebaseFirestore
+import org.jetbrains.anko.toast
 
-class TripSettingsActivity : AppCompatActivity(), SharedUserFragment.OnListFragmentInteractionListener {
+class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, SharedUserFragment.OnListFragmentInteractionListener, Listener {
 
     private lateinit var trip: BeaconTrip
+    private lateinit var presenter: TripSettingsContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +28,9 @@ class TripSettingsActivity : AppCompatActivity(), SharedUserFragment.OnListFragm
 
         trip = intent.getParcelableExtra("trip")
 
-        supportFragmentManager.beginTransaction().replace(android.R.id.content, TripPreferenceFragment.newInstance(trip.observers)).commit()
+        presenter = TripSettingsPresenter(this, TripSettingsUseCase(UserTripsRepository(FirebaseFirestore.getInstance())))
+
+        supportFragmentManager.beginTransaction().replace(android.R.id.content, TripPreferenceFragment.newInstance(trip)).commit()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -36,7 +46,27 @@ class TripSettingsActivity : AppCompatActivity(), SharedUserFragment.OnListFragm
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun showLoading() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun hideLoading() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun showError(error: Throwable) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun showToast(textRes: Int) = toast(textRes)
+
+    override fun onTripNameChanged(name: String) {
+        presenter.onTripNameChanged(name, trip)
+    }
+
     class TripPreferenceFragment : PreferenceFragmentCompat() {
+
+        private var listener: Listener? = null
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -50,15 +80,20 @@ class TripSettingsActivity : AppCompatActivity(), SharedUserFragment.OnListFragm
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"))
+            val namePreference = findPreference("trip_name")
+            namePreference.summary = arguments?.getParcelable<BeaconTrip>(TRIP)?.name
+            namePreference.onPreferenceChangeListener = sBindPreferenceSummaryToValueListener
+
             bindPreferenceSummaryToValue(findPreference("broadcast_frequency"))
         }
 
         override fun onPreferenceTreeClick(preference: Preference?): Boolean {
             if (preference?.key == "shared_options") {
-                android.R.animator.fade_in
-                fragmentManager?.beginTransaction()?.setCustomAnimations(R.anim.slide_in_right, 0, 0, R.anim.slide_out_right)?.add(android.R.id.content, SharedUserFragment.newInstance(arguments?.getStringArrayList(SHARED_USERS_LIST)
-                        ?: listOf()))?.addToBackStack(null)?.commit()
+                val trip = arguments?.getParcelable<BeaconTrip>(TRIP)
+
+                fragmentManager?.beginTransaction()?.setCustomAnimations(R.anim.slide_in_right, 0, 0, R.anim.slide_out_right)
+                        ?.add(android.R.id.content, SharedUserFragment.newInstance(trip?.observers
+                                ?: listOf()))?.addToBackStack(null)?.commit()
             }
             return super.onPreferenceTreeClick(preference)
         }
@@ -72,21 +107,16 @@ class TripSettingsActivity : AppCompatActivity(), SharedUserFragment.OnListFragm
             return super.onOptionsItemSelected(item)
         }
 
-        companion object {
 
-            private const val SHARED_USERS_LIST = "shared_users_list"
-
-            fun newInstance(sharedUsersList: List<String>): TripPreferenceFragment {
-                val fragment = TripPreferenceFragment()
-                val args = Bundle()
-                args.putStringArrayList(SHARED_USERS_LIST, sharedUsersList as ArrayList<String>?)
-                fragment.arguments = args
-                return fragment
-            }
+        override fun onAttach(context: Context) {
+            super.onAttach(context)
+            listener = context as Listener
         }
-    }
 
-    companion object {
+        override fun onDetach() {
+            listener = null
+            super.onDetach()
+        }
 
         /**
          * A preference value change listener that updates the preference's summary
@@ -111,6 +141,7 @@ class TripSettingsActivity : AppCompatActivity(), SharedUserFragment.OnListFragm
                 // For all other preferences, set the summary to the value's
                 // simple string representation.
                 preference.summary = stringValue
+                listener?.onTripNameChanged(preference.summary.toString())
             }
             true
         }
@@ -135,5 +166,22 @@ class TripSettingsActivity : AppCompatActivity(), SharedUserFragment.OnListFragm
                             .getDefaultSharedPreferences(preference.context)
                             .getString(preference.key, ""))
         }
+
+        companion object {
+
+            private const val TRIP = "trip"
+
+            fun newInstance(trip: BeaconTrip): TripPreferenceFragment {
+                val fragment = TripPreferenceFragment()
+                val args = Bundle()
+                args.putParcelable(TRIP, trip)
+                fragment.arguments = args
+                return fragment
+            }
+        }
     }
+}
+
+interface Listener {
+    fun onTripNameChanged(name: String)
 }

@@ -24,6 +24,7 @@
     <string name="shared_trips">Shared Trips</string>
     <string name="all_trips">All Trips</string>
     <string name="title_activity_trip_settings">Trip Settings</string>
+    <string name="trip_name_updated">Trip name updated</string>
 
     <!-- Strings related to Settings -->
 
@@ -39,6 +40,7 @@
         <item>12 hours</item>
         <item>24 hours</item>
     </string-array>
+
     <string-array name="pref_sync_frequency_values">
         <item>15</item>
         <item>30</item>
@@ -48,4 +50,6 @@
         <item>720</item>
         <item>1440</item>
     </string-array>
+
+
 </resources>

@@ -32,6 +32,20 @@ class RxFirestoreDatabase {
 
             return relay
         }
+
+        fun updateValue(query: Task<Void>): Observable<Boolean> {
+            val relay: BehaviorRelay<Boolean> = BehaviorRelay.create()
+
+            query.addOnSuccessListener {
+                relay.call(true)
+            }
+
+            query.addOnFailureListener {
+                relay.call(false)
+            }
+
+            return relay
+        }
     }
 
 }

@@ -6,7 +6,7 @@
     <EditTextPreference
         android:capitalize="words"
         android:inputType="textCapWords"
-        android:key="example_text"
+        android:key="trip_name"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
