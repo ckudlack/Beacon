@@ -1,8 +1,6 @@
 package com.cdk.beacon.ui
 
-import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.NavUtils
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.ListPreference
 import android.support.v7.preference.Preference
@@ -12,42 +10,23 @@ import android.view.MenuItem
 import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip
 
-/**
- * A [PreferenceActivity] that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- *
- * See [Android Design: Settings](http://developer.android.com/design/patterns/settings.html)
- * for design guidelines and the [Settings API Guide](http://developer.android.com/guide/topics/ui/settings.html)
- * for more information on developing a Settings UI.
- */
 class TripSettingsActivity : AppCompatActivity(), SharedUserFragment.OnListFragmentInteractionListener {
 
     private lateinit var trip: BeaconTrip
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupActionBar()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         trip = intent.getParcelableExtra("trip")
 
         supportFragmentManager.beginTransaction().replace(android.R.id.content, TripPreferenceFragment.newInstance(trip.observers)).commit()
     }
 
-    /**
-     * Set up the [android.app.ActionBar], if the API is available.
-     */
-    private fun setupActionBar() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId
         if (id == android.R.id.home) {
-            if (!super.onOptionsItemSelected(item)) {
-                NavUtils.navigateUpFromSameTask(this)
-            }
+            finish()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -87,7 +66,7 @@ class TripSettingsActivity : AppCompatActivity(), SharedUserFragment.OnListFragm
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
             val id = item.itemId
             if (id == android.R.id.home) {
-                startActivity(Intent(activity, TripSettingsActivity::class.java))
+                activity?.finish()
                 return true
             }
             return super.onOptionsItemSelected(item)
