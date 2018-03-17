@@ -16,9 +16,7 @@ class TripsAdapter(private val callback: TripClickedCallback, private val active
         val tripsViewHolder = TripsViewHolder(LayoutInflater.from(parent?.context).inflate(R.layout.trips_item_view, parent, false))
         tripsViewHolder.itemView.setOnClickListener {
             val adapterPosition = tripsViewHolder.adapterPosition
-            val tripId = tripList[adapterPosition].id
-            val userId = tripList[adapterPosition].userId
-            callback.onTripClicked(tripId, userId,tripId == activeJob?.extras?.getString("trip_id") ?: "")
+            callback.onTripClicked(tripList[adapterPosition], tripList[adapterPosition].id == activeJob?.extras?.getString("trip_id") ?: "")
         }
         return tripsViewHolder
     }
@@ -43,7 +41,7 @@ class TripsAdapter(private val callback: TripClickedCallback, private val active
     }
 
     interface TripClickedCallback {
-        fun onTripClicked(tripId: String, userId: String, isActive: Boolean)
+        fun onTripClicked(trip: BeaconTrip, isActive: Boolean)
     }
 }
 

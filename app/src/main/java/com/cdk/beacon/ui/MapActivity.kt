@@ -7,6 +7,7 @@ import android.view.MenuItem
 import com.cdk.beacon.LocationPagerAdapter
 import com.cdk.beacon.MyLocationMarkerRenderer
 import com.cdk.beacon.R
+import com.cdk.beacon.data.BeaconTrip
 import com.cdk.beacon.data.MyLocation
 import com.cdk.beacon.mvp.contract.MapContract
 import com.cdk.beacon.mvp.presenter.MapPresenter
@@ -26,6 +27,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     private lateinit var mapPagerView: MapPagerView<MyLocation>
     private lateinit var presenter: MapContract.Presenter
     private var isUsersTrip: Boolean? = null
+    private var trip: BeaconTrip? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +42,8 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         mapPagerView.setClusteringEnabled(false)
 
         isUsersTrip = intent.getBooleanExtra("isUsersTrip", true)
-        presenter.getLocations("timeStamp", intent.getStringExtra("tripId"))
+        trip = intent.getParcelableExtra("trip")
+        trip?.let { presenter.getLocations("timeStamp", it.id) }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -125,6 +128,6 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     }
 
     override fun launchSettingsActivity() {
-        startActivity<TripSettingsActivity>()
+        startActivity<TripSettingsActivity>("trip" to (trip ?: listOf<BeaconTrip>()))
     }
 }

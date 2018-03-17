@@ -31,32 +31,32 @@ class UserTripsPresenter(private var view: UserTripsContract.View, private var u
         view.startAddTripActivity()
     }
 
-    override fun startBeaconClicked(tripId: String, isPermissionGranted: Boolean, isUsersTrip: Boolean) {
+    override fun startBeaconClicked(trip: BeaconTrip, isPermissionGranted: Boolean, isUsersTrip: Boolean) {
         if (isPermissionGranted) {
-            view.startBeacon(tripId)
-            view.startMapActivity(tripId, isUsersTrip)
+            view.startBeacon(trip)
+            view.startMapActivity(trip, isUsersTrip)
         } else {
-            view.requestPermissions(tripId)
+            view.requestPermissions(trip)
         }
     }
 
-    override fun dontStartBeaconClicked(tripId: String, isUsersTrip: Boolean) {
-        view.startMapActivity(tripId, isUsersTrip)
+    override fun dontStartBeaconClicked(trip: BeaconTrip, isUsersTrip: Boolean) {
+        view.startMapActivity(trip, isUsersTrip)
     }
 
-    override fun tripClicked(tripId: String, isActive: Boolean, isUsersTrip: Boolean) {
+    override fun tripClicked(trip: BeaconTrip, isActive: Boolean, isUsersTrip: Boolean) {
         when {
-            !isUsersTrip -> view.startMapActivity(tripId, isUsersTrip)
-            !isActive -> view.showAlertDialog(tripId, isUsersTrip)
-            else -> view.startMapActivity(tripId, isUsersTrip)
+            !isUsersTrip -> view.startMapActivity(trip, isUsersTrip)
+            !isActive -> view.showAlertDialog(trip, isUsersTrip)
+            else -> view.startMapActivity(trip, isUsersTrip)
         }
     }
 
-    override fun onPermissionResult(tripId: String?, isGranted: Boolean, isUsersTrip: Boolean) {
+    override fun onPermissionResult(trip: BeaconTrip?, isGranted: Boolean, isUsersTrip: Boolean) {
         if (isGranted) {
-            tripId?.let {
-                view.startBeacon(tripId)
-                view.startMapActivity(tripId, isUsersTrip)
+            trip?.let {
+                view.startBeacon(trip)
+                view.startMapActivity(trip, isUsersTrip)
             }
         }
     }

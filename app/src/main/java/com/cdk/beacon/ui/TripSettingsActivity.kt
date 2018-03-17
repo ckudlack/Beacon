@@ -2,8 +2,12 @@ package com.cdk.beacon.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.preference.*
 import android.support.v4.app.NavUtils
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.preference.ListPreference
+import android.support.v7.preference.Preference
+import android.support.v7.preference.PreferenceFragmentCompat
+import android.support.v7.preference.PreferenceManager
 import android.view.MenuItem
 import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip
@@ -18,7 +22,7 @@ import com.cdk.beacon.data.BeaconTrip
  * for design guidelines and the [Settings API Guide](http://developer.android.com/guide/topics/ui/settings.html)
  * for more information on developing a Settings UI.
  */
-class TripSettingsActivity : AppCompatPreferenceActivity() {
+class TripSettingsActivity : AppCompatActivity(), SharedUserFragment.OnListFragmentInteractionListener {
 
     private lateinit var trip: BeaconTrip
 
@@ -26,9 +30,9 @@ class TripSettingsActivity : AppCompatPreferenceActivity() {
         super.onCreate(savedInstanceState)
         setupActionBar()
 
-        fragmentManager.beginTransaction().replace(android.R.id.content, TripPreferenceFragment.newInstance()).commit()
+        trip = intent.getParcelableExtra("trip")
 
-//        trip = intent.getParcelableExtra<BeaconTrip>("trip")
+        supportFragmentManager.beginTransaction().replace(android.R.id.content, TripPreferenceFragment.newInstance(trip.observers)).commit()
     }
 
     /**
@@ -38,31 +42,30 @@ class TripSettingsActivity : AppCompatPreferenceActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    override fun onMenuItemSelected(featureId: Int, item: MenuItem): Boolean {
-        val id = item.itemId
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val id = item?.itemId
         if (id == android.R.id.home) {
-            if (!super.onMenuItemSelected(featureId, item)) {
+            if (!super.onOptionsItemSelected(item)) {
                 NavUtils.navigateUpFromSameTask(this)
             }
             return true
         }
-        return super.onMenuItemSelected(featureId, item)
+        return super.onOptionsItemSelected(item)
     }
 
-    /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
-     */
-    override fun isValidFragment(fragmentName: String): Boolean {
-        return PreferenceFragment::class.java.name == fragmentName
-                || TripPreferenceFragment::class.java.name == fragmentName
+    override fun onSharedUserRemoved(itemPosition: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    class TripPreferenceFragment : PreferenceFragment() {
+    class TripPreferenceFragment : PreferenceFragmentCompat() {
+
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            addPreferencesFromResource(R.xml.pref_settings)
             setHasOptionsMenu(true)
+        }
+
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            addPreferencesFromResource(R.xml.pref_settings)
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
@@ -70,6 +73,15 @@ class TripSettingsActivity : AppCompatPreferenceActivity() {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"))
             bindPreferenceSummaryToValue(findPreference("broadcast_frequency"))
+        }
+
+        override fun onPreferenceTreeClick(preference: Preference?): Boolean {
+            if (preference?.key == "shared_options") {
+                android.R.animator.fade_in
+                fragmentManager?.beginTransaction()?.setCustomAnimations(R.anim.slide_in_right, 0, 0, R.anim.slide_out_right)?.add(android.R.id.content, SharedUserFragment.newInstance(arguments?.getStringArrayList(SHARED_USERS_LIST)
+                        ?: listOf()))?.addToBackStack(null)?.commit()
+            }
+            return super.onPreferenceTreeClick(preference)
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -82,7 +94,16 @@ class TripSettingsActivity : AppCompatPreferenceActivity() {
         }
 
         companion object {
-            fun newInstance(): TripPreferenceFragment = TripPreferenceFragment()
+
+            private const val SHARED_USERS_LIST = "shared_users_list"
+
+            fun newInstance(sharedUsersList: List<String>): TripPreferenceFragment {
+                val fragment = TripPreferenceFragment()
+                val args = Bundle()
+                args.putStringArrayList(SHARED_USERS_LIST, sharedUsersList as ArrayList<String>?)
+                fragment.arguments = args
+                return fragment
+            }
         }
     }
 
