@@ -60,6 +60,8 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
 
     override fun onTripNameChanged(name: String) = presenter.onTripNameChanged(name, trip)
 
+    override fun onBeaconFrequencyChanged(frequency: Int) = presenter.onBeaconFrequencyUpdated(frequency, trip)
+
     class TripPreferenceFragment : PreferenceFragmentCompat() {
 
         private var listener: Listener? = null
@@ -129,6 +131,7 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
                         else
                             null)
 
+                listener?.onBeaconFrequencyChanged(stringValue.toInt())
             } else {
                 // For all other preferences, set the summary to the value's
                 // simple string representation.
@@ -176,4 +179,5 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
 
 interface Listener {
     fun onTripNameChanged(name: String)
+    fun onBeaconFrequencyChanged(frequency: Int)
 }

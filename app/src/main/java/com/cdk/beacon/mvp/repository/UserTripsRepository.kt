@@ -71,6 +71,10 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
         return RxFirestoreDatabase.updateValue(database.collection("trips").document(tripId).update("observers", observerMap)).toCompletable()
     }
 
+    override fun setBeaconFrequency(tripId: String, frequency: Int): Completable {
+        return RxFirestoreDatabase.updateValue(database.collection("trips").document(tripId).update("beaconFrequency", frequency)).toCompletable()
+    }
+
     private fun sanitizeEmailToFirebaseName(string: String): String {
         val lastIndexOf = string.lastIndexOf('.')
         return string.replaceRange(lastIndexOf, lastIndexOf + 1, "@")

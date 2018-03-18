@@ -23,6 +23,7 @@ class NewTripPresenter(private val useCase: NewTripUseCase, private val view: Ne
         useCase.addTrip(userId, trip, object : DefaultSubscriber<List<BeaconTrip>>() {
             override fun onNext(t: List<BeaconTrip>) {
                 view.goToStartBeaconActivity()
+                onCompleted()
             }
         })
     }

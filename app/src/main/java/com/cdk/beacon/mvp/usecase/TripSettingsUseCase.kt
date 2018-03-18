@@ -13,4 +13,8 @@ class TripSettingsUseCase(private val repository: UserTripsDataContract.Reposito
     fun updateSharedUsers(sharedUsers: List<String>, tripId: String, onSuccess: Action0, onError: Action1<Throwable>) {
         execute(repository.setSharedUsers(tripId, sharedUsers), onSuccess, onError)
     }
+
+    fun updateBeaconFrequency(frequency: Int, tripId: String, onSuccess: Action0, onError: Action1<Throwable>) {
+        execute(repository.setBeaconFrequency(tripId, frequency), onSuccess, onError)
+    }
 }

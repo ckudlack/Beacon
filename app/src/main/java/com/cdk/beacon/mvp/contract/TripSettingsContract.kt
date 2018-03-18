@@ -13,5 +13,6 @@ interface TripSettingsContract {
     interface Presenter : BasePresenter {
         fun onTripNameChanged(name: String, trip: BeaconTrip)
         fun onSharedUserRemoved(index: Int, trip: BeaconTrip)
+        fun onBeaconFrequencyUpdated(frequency: Int, trip: BeaconTrip)
     }
 }

@@ -15,6 +15,7 @@ import android.os.PersistableBundle
 import android.support.v4.app.NotificationCompat
 import com.cdk.beacon.DateTimeUtils
 import com.cdk.beacon.R
+import com.cdk.beacon.data.BeaconTrip
 import com.cdk.beacon.data.MyLocation
 import com.google.android.gms.location.*
 import com.google.firebase.firestore.FirebaseFirestore
@@ -150,18 +151,18 @@ class BeaconService : JobService() {
     companion object {
 
         private const val JOB_ID = 123
-        private const val ONE_HOUR = 60 * 60 * 1000L
+        private const val ONE_MINUTE = 60 * 1000L
         private const val TRIP_ID = "trip_id"
 
         // There is a minimum period of 15 mins for a periodic JobService
-        fun schedule(context: Context, tripId: String) {
+        fun schedule(context: Context, trip: BeaconTrip) {
             val componentName = ComponentName(context, BeaconService::class.java)
 
             val bundle = PersistableBundle()
-            bundle.putString(TRIP_ID, tripId)
+            bundle.putString(TRIP_ID, trip.id)
 
             val builder = JobInfo.Builder(JOB_ID, componentName)
-                    .setPeriodic(12 * ONE_HOUR)
+                    .setPeriodic(trip.beaconFrequency * ONE_MINUTE)
                     .setRequiresCharging(false)
                     .setRequiredNetworkType(NETWORK_TYPE_ANY)
                     .setExtras(bundle)

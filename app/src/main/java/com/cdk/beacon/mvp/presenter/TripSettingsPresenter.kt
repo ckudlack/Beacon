@@ -22,6 +22,12 @@ class TripSettingsPresenter(private val view: TripSettingsContract.View, private
         useCase.updateSharedUsers(mutableSharedUsers.toList(), trip.id, Action0 { view.showToast(R.string.trip_name_updated) }, Action1 { error: Throwable -> view.showError(error) })
     }
 
+    override fun onBeaconFrequencyUpdated(frequency: Int, trip: BeaconTrip) {
+        if (frequency != trip.beaconFrequency) {
+            useCase.updateBeaconFrequency(frequency, trip.id, Action0 { view.showToast(R.string.trip_name_updated) }, Action1 { error: Throwable -> view.showError(error) })
+        }
+    }
+
     override fun onStop() {
         useCase.clear()
     }

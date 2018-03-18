@@ -99,7 +99,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     override fun startMapActivity(trip: BeaconTrip, isUsersTrip: Boolean) =
             startActivity<MapActivity>("trip" to trip, "isUsersTrip" to isUsersTrip)
 
-    override fun startBeacon(trip: BeaconTrip) = BeaconService.schedule(this, trip.id)
+    override fun startBeacon(trip: BeaconTrip) = BeaconService.schedule(this, trip)
 
     override fun showAlertDialog(trip: BeaconTrip, isUsersTrip: Boolean) {
         alert("This will pause any other active trip", "Start broadcasting?") {
