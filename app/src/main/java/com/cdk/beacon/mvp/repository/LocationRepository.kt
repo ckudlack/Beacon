@@ -10,7 +10,7 @@ import rx.Observable
 class LocationRepository(private val database: FirebaseFirestore) : MapDataContract.Repository {
 
     override fun getLocationList(sortByValue: String, tripId: String): Observable<List<MyLocation>> {
-        return RxFirestoreDatabase.getSingleValue(database.collection("locations").document(tripId).collection("beacons").get()).flatMap { querySnapshot: QuerySnapshot ->
+        return RxFirestoreDatabase.getSingleValue(database.collection("locations").document(tripId).collection("beacons").orderBy("timeStamp").get()).flatMap { querySnapshot: QuerySnapshot ->
             val locationList = ArrayList<MyLocation>()
             querySnapshot.documents.forEach {
                 val latitude = it.data["latitude"] as Double

@@ -76,10 +76,6 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             addPreferencesFromResource(R.xml.pref_settings)
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
             val namePreference = findPreference("trip_name")
             namePreference.summary = arguments?.getParcelable<BeaconTrip>(TRIP)?.name
             namePreference.onPreferenceChangeListener = sBindPreferenceSummaryToValueListener
