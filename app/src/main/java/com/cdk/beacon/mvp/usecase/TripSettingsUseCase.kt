@@ -9,4 +9,8 @@ class TripSettingsUseCase(private val repository: UserTripsDataContract.Reposito
     fun updateTripName(name: String, tripId: String, onSuccess: Action0, onError: Action1<Throwable>) {
         execute(repository.setTripName(tripId, name), onSuccess, onError)
     }
+
+    fun updateSharedUsers(sharedUsers: List<String>, tripId: String, onSuccess: Action0, onError: Action1<Throwable>) {
+        execute(repository.setSharedUsers(tripId, sharedUsers), onSuccess, onError)
+    }
 }

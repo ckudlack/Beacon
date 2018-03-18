@@ -15,7 +15,9 @@ class SharedUserAdapter(private val sharedUsersList: MutableList<String>?, priva
                 .inflate(R.layout.shared_user_item_view, parent, false)
         val sharedUserViewHolder = SharedUserViewHolder(view)
         sharedUserViewHolder.itemView.remove_user.setOnClickListener {
-            callback?.onSharedUserRemoved(sharedUserViewHolder.adapterPosition)
+            val itemPosition = sharedUserViewHolder.adapterPosition
+            callback?.onSharedUserRemoved(itemPosition)
+            removeItem(itemPosition)
         }
         return sharedUserViewHolder
     }
@@ -28,10 +30,9 @@ class SharedUserAdapter(private val sharedUsersList: MutableList<String>?, priva
         return sharedUsersList?.size ?: 0
     }
 
-    fun update(usersList: List<String>?) {
-        sharedUsersList?.clear()
-        usersList?.let { sharedUsersList?.addAll(it) }
-        notifyDataSetChanged()
+    private fun removeItem(position: Int) {
+        sharedUsersList?.removeAt(position)
+        notifyItemRemoved(position)
     }
 
     class SharedUserViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {

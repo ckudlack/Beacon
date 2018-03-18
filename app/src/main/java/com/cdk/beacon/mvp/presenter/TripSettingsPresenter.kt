@@ -15,8 +15,11 @@ class TripSettingsPresenter(private val view: TripSettingsContract.View, private
         }
     }
 
-    override fun onSharedUserRemoved(index: Int, tripId: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onSharedUserRemoved(index: Int, trip: BeaconTrip) {
+        val mutableSharedUsers = trip.observers.toMutableList()
+        mutableSharedUsers.removeAt(index)
+
+        useCase.updateSharedUsers(mutableSharedUsers.toList(), trip.id, Action0 { view.showToast(R.string.trip_name_updated) }, Action1 { error: Throwable -> view.showError(error) })
     }
 
     override fun onStop() {

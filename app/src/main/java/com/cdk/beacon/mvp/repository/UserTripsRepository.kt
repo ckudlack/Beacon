@@ -65,7 +65,7 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
 
     override fun setSharedUsers(tripId: String, sharedUsers: List<String>): Completable {
         val observerMap = mutableMapOf<String, Boolean>()
-        sharedUsers.forEach { observerMap[it] = true }
+        sharedUsers.forEach { observerMap[sanitizeEmailToFirebaseName(it)] = true }
 
         return RxFirestoreDatabase.updateValue(database.collection("trips").document(tripId).update("observers", observerMap)).toCompletable()
     }
