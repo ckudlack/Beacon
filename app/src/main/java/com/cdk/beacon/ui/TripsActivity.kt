@@ -33,6 +33,8 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var adapter: TripsAdapter
 
+    private var scheduler: JobScheduler? = null
+
     //TODO: Find a better way than caching this
     private var selectedTrip: BeaconTrip? = null
 
@@ -42,11 +44,11 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trips)
 
-        val scheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+        scheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
 
         firebaseAuth = FirebaseAuth.getInstance()
         presenter = UserTripsPresenter(this, TripsUseCase(UserTripsRepository(FirebaseFirestore.getInstance())))
-        adapter = TripsAdapter(this, if (scheduler.allPendingJobs.size == 0) null else scheduler.allPendingJobs[0])
+        adapter = TripsAdapter(this, if (scheduler?.allPendingJobs?.isEmpty() == true) null else scheduler?.allPendingJobs?.get(0), firebaseAuth.currentUser?.uid)
         filterDialog = FilterListDialogFragment.newInstance()
 
         trips_list.adapter = adapter
@@ -88,21 +90,16 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun showTrips(trips: MutableList<BeaconTrip>) {
-        adapter.updateItems(trips)
+    override fun showTrips(trips: MutableList<BeaconTrip?>) {
+        adapter.updateItems(trips, if(scheduler?.allPendingJobs?.isEmpty() == true) null else scheduler?.allPendingJobs?.get(0))
     }
 
-    override fun startAddTripActivity() {
-        startActivity<NewTripActivity>()
-    }
+    override fun startAddTripActivity() = startActivity<NewTripActivity>()
 
-    override fun startMapActivity(trip: BeaconTrip, isUsersTrip: Boolean) {
-        startActivity<MapActivity>("trip" to trip, "isUsersTrip" to isUsersTrip)
-    }
+    override fun startMapActivity(trip: BeaconTrip, isUsersTrip: Boolean) =
+            startActivity<MapActivity>("trip" to trip, "isUsersTrip" to isUsersTrip)
 
-    override fun startBeacon(trip: BeaconTrip) {
-        BeaconService.schedule(this, trip.id)
-    }
+    override fun startBeacon(trip: BeaconTrip) = BeaconService.schedule(this, trip.id)
 
     override fun showAlertDialog(trip: BeaconTrip, isUsersTrip: Boolean) {
         alert("This will pause any other active trip", "Start broadcasting?") {

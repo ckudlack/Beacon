@@ -16,7 +16,7 @@ interface UserTripsContract {
     }
 
     interface View : BaseView {
-        fun showTrips(trips: MutableList<BeaconTrip>)
+        fun showTrips(trips: MutableList<BeaconTrip?>)
         fun startAddTripActivity()
         fun startMapActivity(trip: BeaconTrip, isUsersTrip: Boolean)
         fun startBeacon(trip: BeaconTrip)

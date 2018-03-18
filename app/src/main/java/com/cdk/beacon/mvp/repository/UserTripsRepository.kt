@@ -10,10 +10,12 @@ import rx.Observable
 
 class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDataContract.Repository {
 
-    override fun getAllTrips(userId: String, userEmail: String): Observable<MutableList<BeaconTrip>> {
-        return Observable.combineLatest(getMyTrips(userId), getTripsSharedWithMe(userId, userEmail), { list1: MutableList<BeaconTrip>, list2: MutableList<BeaconTrip> ->
-            val combinedList = mutableListOf<BeaconTrip>()
+    override fun getAllTrips(userId: String, userEmail: String): Observable<MutableList<BeaconTrip?>> {
+        return Observable.combineLatest(getMyTrips(userId), getTripsSharedWithMe(userId, userEmail), { list1: MutableList<BeaconTrip?>, list2: MutableList<BeaconTrip?> ->
+            val combinedList = mutableListOf<BeaconTrip?>()
+            combinedList.add(null)
             combinedList.addAll(list1)
+            combinedList.add(null)
             combinedList.addAll(list2)
             combinedList
         })
@@ -28,9 +30,9 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
         }
     }
 
-    override fun getMyTrips(userId: String): Observable<MutableList<BeaconTrip>> {
+    override fun getMyTrips(userId: String): Observable<MutableList<BeaconTrip?>> {
         return RxFirestoreDatabase.getSingleValue(database.collection("trips").whereEqualTo("userId", userId).get()).flatMap { querySnapshotRxFirestoreChildEvent ->
-            val tripList = mutableListOf<BeaconTrip>()
+            val tripList = mutableListOf<BeaconTrip?>()
             querySnapshotRxFirestoreChildEvent.documents.forEach {
                 val firebaseTrip = it.toObject(FirebaseTrip::class.java)
                 tripList.add(firebaseTrip.toBeaconTrip(it.id))
@@ -47,10 +49,10 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
         }
     }
 
-    override fun getTripsSharedWithMe(userId: String, userEmail: String): Observable<MutableList<BeaconTrip>> {
+    override fun getTripsSharedWithMe(userId: String, userEmail: String): Observable<MutableList<BeaconTrip?>> {
         val sanitizedEmail = sanitizeEmailToFirebaseName(userEmail)
         return RxFirestoreDatabase.getSingleValue(database.collection("trips").whereEqualTo("observers.$sanitizedEmail", true).get()).flatMap { querySnapshot ->
-            val tripList = mutableListOf<BeaconTrip>()
+            val tripList = mutableListOf<BeaconTrip?>()
             querySnapshot.documents.forEach {
                 tripList.add(it.toObject(FirebaseTrip::class.java).toBeaconTrip(it.id))
             }

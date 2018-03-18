@@ -42,9 +42,7 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onSharedUserRemoved(itemPosition: Int) {
-        presenter.onSharedUserRemoved(itemPosition, trip)
-    }
+    override fun onSharedUserRemoved(itemPosition: Int) = presenter.onSharedUserRemoved(itemPosition, trip)
 
     override fun showLoading() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -60,9 +58,7 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
 
     override fun showToast(textRes: Int) = toast(textRes)
 
-    override fun onTripNameChanged(name: String) {
-        presenter.onTripNameChanged(name, trip)
-    }
+    override fun onTripNameChanged(name: String) = presenter.onTripNameChanged(name, trip)
 
     class TripPreferenceFragment : PreferenceFragmentCompat() {
 
