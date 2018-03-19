@@ -1,9 +1,6 @@
 package com.cdk.beacon.ui
 
-import android.Manifest
 import android.os.Bundle
-import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -64,19 +61,6 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     }
 
     override fun scheduleBeaconService() {
-        /*val uid = FirebaseAuth.getInstance().currentUser?.uid
-
-        val database = FirebaseDatabase.getInstance()
-        val locationReference = database.getReference("users")
-
-        val key = locationReference.push().key
-        locationReference.child(key).setValue("blah")*/
-    }
-
-    override fun requestPermissions() {
-        ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_CODE)
     }
 
     override fun startTripsActivity() {

@@ -1,5 +1,6 @@
 package com.cdk.beacon.mvp.presenter
 
+import com.cdk.beacon.DefaultSubscriber
 import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip
 import com.cdk.beacon.mvp.contract.TripSettingsContract
@@ -19,7 +20,24 @@ class TripSettingsPresenter(private val view: TripSettingsContract.View, private
         val mutableSharedUsers = trip.observers.toMutableList()
         mutableSharedUsers.removeAt(index)
 
-        useCase.updateSharedUsers(mutableSharedUsers.toList(), trip.id, Action0 { view.showToast(R.string.trip_name_updated) }, Action1 { error: Throwable -> view.showError(error) })
+        useCase.updateSharedUsers(mutableSharedUsers.toList(), trip.id, object : DefaultSubscriber<List<String>>() {
+            override fun onNext(t: List<String>) {
+                view.showToast(R.string.user_removed)
+                view.updateSharedUsers(t)
+            }
+        })
+    }
+
+    override fun onSharedUserAdded(email: String, trip: BeaconTrip) {
+        val mutableSharedUsers = trip.observers.toMutableList()
+        mutableSharedUsers.add(email)
+
+        useCase.updateSharedUsers(mutableSharedUsers.toList(), trip.id, object : DefaultSubscriber<List<String>>() {
+            override fun onNext(t: List<String>) {
+                view.showToast(R.string.user_added)
+                view.updateSharedUsers(t)
+            }
+        })
     }
 
     override fun onBeaconFrequencyUpdated(frequency: Int, trip: BeaconTrip) {

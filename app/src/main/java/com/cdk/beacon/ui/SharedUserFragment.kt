@@ -14,21 +14,18 @@ import java.util.*
 
 class SharedUserFragment : Fragment() {
 
-    private var sharedUsersList: List<String>? = null
     private var mListener: OnListFragmentInteractionListener? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        sharedUsersList = arguments?.getStringArrayList(SHARED_USERS_LIST)
-    }
+    private var adapter: SharedUserAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_shared_users, container, false)
 
+        adapter = SharedUserAdapter(arguments?.getStringArrayList(SHARED_USERS_LIST)?.toMutableList(), mListener)
+
         // Set the adapter
         view.shared_users_list.layoutManager = LinearLayoutManager(context)
-        view.shared_users_list.adapter = SharedUserAdapter(sharedUsersList?.toMutableList(), mListener)
+        view.shared_users_list.adapter = adapter
 
         return view
     }
@@ -47,18 +44,23 @@ class SharedUserFragment : Fragment() {
         mListener = null
     }
 
+    fun updateSharedUsers(users: List<String>?) {
+        adapter?.updateItems(users)
+    }
+
     interface OnListFragmentInteractionListener {
         fun onSharedUserRemoved(itemPosition: Int)
+        fun onSharedUserAdded(email: String)
     }
 
     companion object {
 
         private const val SHARED_USERS_LIST = "shared_users_list"
 
-        fun newInstance(sharedUsers: List<String>): SharedUserFragment {
+        fun newInstance(sharedUsers: List<String>?): SharedUserFragment {
             val fragment = SharedUserFragment()
             val args = Bundle()
-            args.putStringArrayList(SHARED_USERS_LIST, sharedUsers as ArrayList<String>?)
+            args.putStringArrayList(SHARED_USERS_LIST, if(sharedUsers?.isEmpty() != false) arrayListOf<String>() else sharedUsers as ArrayList<String>?)
             fragment.arguments = args
             return fragment
         }

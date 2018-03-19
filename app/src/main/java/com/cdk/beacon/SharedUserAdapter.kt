@@ -6,39 +6,78 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.cdk.beacon.ui.SharedUserFragment.OnListFragmentInteractionListener
+import kotlinx.android.synthetic.main.add_shared_user_item_view.view.*
 import kotlinx.android.synthetic.main.shared_user_item_view.view.*
 
-class SharedUserAdapter(private val sharedUsersList: MutableList<String>?, private val callback: OnListFragmentInteractionListener?) : RecyclerView.Adapter<SharedUserAdapter.SharedUserViewHolder>() {
+class SharedUserAdapter(usersList: List<String>?, private val callback: OnListFragmentInteractionListener?) : RecyclerView.Adapter<SharedUserAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SharedUserViewHolder {
-        val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.shared_user_item_view, parent, false)
-        val sharedUserViewHolder = SharedUserViewHolder(view)
-        sharedUserViewHolder.itemView.remove_user.setOnClickListener {
-            val itemPosition = sharedUserViewHolder.adapterPosition
-            callback?.onSharedUserRemoved(itemPosition)
-            removeItem(itemPosition)
-        }
-        return sharedUserViewHolder
+    private val sharedUsersList = mutableListOf<String>()
+
+    init {
+        usersList?.let { sharedUsersList.addAll(it) }
     }
 
-    override fun onBindViewHolder(holder: SharedUserViewHolder, position: Int) {
-        sharedUsersList?.let { holder.bind(sharedUsersList[position]) }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val viewHolder: ViewHolder
+        val view = LayoutInflater.from(parent.context)
+                .inflate(viewType, parent, false)
+
+        if (viewType == R.layout.shared_user_item_view) {
+            viewHolder = SharedUserViewHolder(view)
+            viewHolder.itemView.remove_user.setOnClickListener {
+                val itemPosition = viewHolder.adapterPosition
+                callback?.onSharedUserRemoved(itemPosition)
+            }
+        } else {
+            viewHolder = AddSharedUserViewHolder(view)
+            viewHolder.itemView.add_shared_user_button.setOnClickListener {
+                callback?.onSharedUserAdded(viewHolder.itemView.user_name_edittext.text.toString())
+            }
+        }
+
+        return viewHolder
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        when (holder) {
+            is SharedUserViewHolder -> holder.bind(sharedUsersList[position])
+            is AddSharedUserViewHolder -> holder.bind()
+        }
     }
 
     override fun getItemCount(): Int {
-        return sharedUsersList?.size ?: 0
+        return (sharedUsersList.size) + 1
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (position == itemCount - 1) R.layout.add_shared_user_item_view else R.layout.shared_user_item_view
     }
 
     private fun removeItem(position: Int) {
-        sharedUsersList?.removeAt(position)
+        sharedUsersList.removeAt(position)
         notifyItemRemoved(position)
     }
 
-    class SharedUserViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
+    fun updateItems(users: List<String>?) {
+        users?.let {
+            sharedUsersList.clear()
+            sharedUsersList.addAll(users)
+            notifyDataSetChanged()
+        }
+    }
+
+    class SharedUserViewHolder(itemView: View?) : ViewHolder(itemView) {
         fun bind(userEmail: String) {
             itemView.user_email.text = userEmail
         }
     }
+
+    class AddSharedUserViewHolder(itemView: View?) : ViewHolder(itemView) {
+        fun bind() {
+            itemView.user_name_edittext.text.clear()
+        }
+    }
+
+    abstract class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView)
 }
 

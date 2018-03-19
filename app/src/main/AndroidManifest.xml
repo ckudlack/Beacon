@@ -40,9 +40,11 @@
         </activity>
         <activity
             android:name=".ui.TripsActivity"
+            android:label=""
             android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.NewTripActivity"
+            android:label="@string/new_trip"
             android:screenOrientation="portrait">
         </activity>
         <activity

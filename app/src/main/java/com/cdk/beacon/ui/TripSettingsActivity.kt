@@ -44,6 +44,8 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
 
     override fun onSharedUserRemoved(itemPosition: Int) = presenter.onSharedUserRemoved(itemPosition, trip)
 
+    override fun onSharedUserAdded(email: String) = presenter.onSharedUserAdded(email, trip)
+
     override fun showLoading() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -57,6 +59,14 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
     }
 
     override fun showToast(textRes: Int) = toast(textRes)
+
+    override fun updateSharedUsers(sharedUsers: List<String>) {
+        trip.observers = sharedUsers
+        val sharedUserFragment = supportFragmentManager.findFragmentByTag(SHARED_USERS_TAG)
+        sharedUserFragment?.let {
+            (it as SharedUserFragment).updateSharedUsers(sharedUsers)
+        }
+    }
 
     override fun onTripNameChanged(name: String) = presenter.onTripNameChanged(name, trip)
 
@@ -87,7 +97,7 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
 
                 fragmentManager?.beginTransaction()?.setCustomAnimations(R.anim.slide_in_right, 0, 0, R.anim.slide_out_right)
                         ?.add(android.R.id.content, SharedUserFragment.newInstance(trip?.observers
-                                ?: listOf()))?.addToBackStack(null)?.commit()
+                                ?: listOf()), SHARED_USERS_TAG)?.addToBackStack(null)?.commit()
             }
             return super.onPreferenceTreeClick(preference)
         }
@@ -174,6 +184,10 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
                 return fragment
             }
         }
+    }
+
+    companion object {
+        const val SHARED_USERS_TAG = "shared_users_tag"
     }
 }
 

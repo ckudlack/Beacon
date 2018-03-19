@@ -13,7 +13,6 @@ interface MainContract {
     interface View : BaseView {
         fun startLoginActivity()
         fun scheduleBeaconService()
-        fun requestPermissions()
         fun logOut()
         fun startTripsActivity()
         fun close()

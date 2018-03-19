@@ -14,15 +14,22 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_new_trip.*
 
-class NewTripActivity : AppCompatActivity(), NewTripContract.View {
+class NewTripActivity : AppCompatActivity(), NewTripContract.View, SharedUserFragment.OnListFragmentInteractionListener {
 
     private lateinit var presenter: NewTripContract.Presenter
+    private var sharedUsers: MutableList<String>? = null
+    private var fragment: SharedUserFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_trip)
 
+        sharedUsers = savedInstanceState?.takeIf { it.containsKey(SHARED_USERS) }?.getStringArrayList(SHARED_USERS) ?: mutableListOf()
+
         presenter = NewTripPresenter(NewTripUseCase(UserTripsRepository(FirebaseFirestore.getInstance())), this)
+        fragment = SharedUserFragment.newInstance(sharedUsers?.toList())
+
+        supportFragmentManager.beginTransaction().replace(R.id.shared_users_content_view, fragment).commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -33,11 +40,18 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.trip_done -> {
-                val userId = (FirebaseAuth.getInstance().currentUser?.uid ?: "")
-                presenter.addTrip(userId, BeaconTrip(ArrayList(), trip_name_edittext.text.toString(), mutableListOf(email_to_share.text.toString()), "", userId, 360))
+                // if there is no current user, force a crash
+                val userId = FirebaseAuth.getInstance().currentUser!!.uid
+                presenter.addTrip(userId, BeaconTrip(ArrayList(), trip_name_edittext.text.toString(), sharedUsers?.toList()
+                        ?: listOf(), "", userId, 360))
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putStringArrayList(SHARED_USERS, sharedUsers as java.util.ArrayList<String>)
     }
 
     override fun showLoading() {
@@ -54,5 +68,19 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View {
 
     override fun goToStartBeaconActivity() {
         finish()
+    }
+
+    override fun onSharedUserRemoved(itemPosition: Int) {
+        sharedUsers?.removeAt(itemPosition)
+        fragment?.updateSharedUsers(sharedUsers?.toList())
+    }
+
+    override fun onSharedUserAdded(email: String) {
+        sharedUsers?.add(email)
+        fragment?.updateSharedUsers(sharedUsers?.toList())
+    }
+
+    companion object {
+        const val SHARED_USERS = "shared_users"
     }
 }
