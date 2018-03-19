@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip
 import com.cdk.beacon.mvp.contract.NewTripContract
@@ -13,6 +14,7 @@ import com.cdk.beacon.mvp.usecase.NewTripUseCase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_new_trip.*
+import org.jetbrains.anko.selector
 
 class NewTripActivity : AppCompatActivity(), NewTripContract.View, SharedUserFragment.OnListFragmentInteractionListener {
 
@@ -30,6 +32,18 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View, SharedUserFra
         fragment = SharedUserFragment.newInstance(sharedUsers?.toList())
 
         supportFragmentManager.beginTransaction().replace(R.id.shared_users_content_view, fragment).commit()
+
+        beacon_frequency.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val frequencies = resources.getStringArray(R.array.pref_sync_frequency_titles).asList()
+                selector(resources.getString(R.string.pref_title_sync_frequency), frequencies, { _, i ->
+                    beacon_frequency.setText(frequencies[i])
+                    beacon_frequency.tag = resources.getStringArray(R.array.pref_sync_frequency_values)[i].toInt()
+                })
+            }
+            true
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -43,7 +57,7 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View, SharedUserFra
                 // if there is no current user, force a crash
                 val userId = FirebaseAuth.getInstance().currentUser!!.uid
                 presenter.addTrip(userId, BeaconTrip(ArrayList(), trip_name_edittext.text.toString(), sharedUsers?.toList()
-                        ?: listOf(), "", userId, 360))
+                        ?: listOf(), "", userId, beacon_frequency.tag as Int))
             }
         }
         return super.onOptionsItemSelected(item)
