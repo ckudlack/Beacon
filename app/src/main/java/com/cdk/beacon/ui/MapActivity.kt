@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.cdk.beacon.LocationPagerAdapter
 import com.cdk.beacon.MyLocationMarkerRenderer
 import com.cdk.beacon.R
@@ -19,10 +20,11 @@ import com.cdk.bettermapsearch.clustering.MapPagerMarkerRenderer
 import com.cdk.bettermapsearch.interfaces.MapReadyCallback
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
 import com.google.firebase.firestore.FirebaseFirestore
 import org.jetbrains.anko.startActivity
 
-class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContract.View {
+class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContract.View, GoogleMap.InfoWindowAdapter {
 
     private lateinit var mapPagerView: MapPagerView<MyLocation>
     private lateinit var presenter: MapContract.Presenter
@@ -44,6 +46,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         mapPagerView.setAdapter(LocationPagerAdapter())
         mapPagerView.getMapAsync(this)
         mapPagerView.setClusteringEnabled(false)
+        mapPagerView.customInfoWindowAdapter = this
 
         isUsersTrip = intent.getBooleanExtra("isUsersTrip", true)
 
@@ -105,6 +108,10 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     override fun onMapReady(googleMap: GoogleMap, clusterManager: MapPagerClusterManager<MyLocation>): MapPagerMarkerRenderer<MyLocation> {
         return MyLocationMarkerRenderer(this, googleMap, clusterManager)
     }
+
+    override fun getInfoContents(marker: Marker?): View? = null
+
+    override fun getInfoWindow(marker: Marker?): View = View.inflate(this, R.layout.empty_window_view, null)
 
     private fun createBoundsFromList(items: List<MyLocation>): LatLngBounds {
         val boundsBuilder = LatLngBounds.Builder()
