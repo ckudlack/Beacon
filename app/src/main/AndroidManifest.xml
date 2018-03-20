@@ -28,8 +28,9 @@
             android:name=".service.BeaconService"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 
-        <activity android:name=".ui.MapActivity">
-        </activity>
+        <activity
+            android:name=".ui.MapActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.LoginActivity"
             android:label="@string/title_activity_login"

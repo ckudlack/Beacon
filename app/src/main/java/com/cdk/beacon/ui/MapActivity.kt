@@ -33,6 +33,10 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        trip = intent.getParcelableExtra("trip")
+
         presenter = MapPresenter(this, MapUseCase(LocationRepository(FirebaseFirestore.getInstance())))
 
         mapPagerView = findViewById(R.id.map_pager)
@@ -42,8 +46,10 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         mapPagerView.setClusteringEnabled(false)
 
         isUsersTrip = intent.getBooleanExtra("isUsersTrip", true)
-        trip = intent.getParcelableExtra("trip")
+
         trip?.let { presenter.getLocations("timeStamp", it.id) }
+
+        title = trip?.name
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -55,15 +61,13 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         isUsersTrip?.let {
             menu?.findItem(R.id.action_settings)?.isVisible = it
         }
-
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.action_settings -> {
-                presenter.settingsButtonClicked()
-            }
+            R.id.action_settings -> presenter.settingsButtonClicked()
+            android.R.id.home -> finish()
         }
         return super.onOptionsItemSelected(item)
     }
