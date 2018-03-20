@@ -25,7 +25,7 @@ import org.jetbrains.anko.toast
 class BeaconService : JobService() {
 
     private var callback: LocationCallback? = null
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
     override fun onStartJob(params: JobParameters): Boolean {
         // Get location, send to server
@@ -75,27 +75,11 @@ class BeaconService : JobService() {
             }
         }
 
-        // --- DB Test code ---
-        /*val latitude = 34.1234
-        val longitude = -122.084
-
-        // Send these to Firebase
-        val database = FirebaseDatabase.getInstance()
-        val locationReference = database.reference
-        val currentTimeMillis = System.currentTimeMillis()
-
-        locationReference
-                .child("locations")
-                .push()
-                .setValue(MyLocation(latitude, longitude, currentTimeMillis))*/
-
-        // --- End test code ---
-
-        fusedLocationProviderClient.requestLocationUpdates(createLocationRequest(), callback, null)
+        fusedLocationProviderClient?.requestLocationUpdates(createLocationRequest(), callback, null)
     }
 
     private fun removeListenerAndFinishJob(jobParams: JobParameters) {
-        fusedLocationProviderClient.removeLocationUpdates(callback)
+        fusedLocationProviderClient?.removeLocationUpdates(callback)
         callback = null
         jobFinished(jobParams, false)
     }
@@ -162,14 +146,17 @@ class BeaconService : JobService() {
             bundle.putString(TRIP_ID, trip.id)
 
             val builder = JobInfo.Builder(JOB_ID, componentName)
-                    .setPeriodic(trip.beaconFrequency * ONE_MINUTE)
                     .setRequiresCharging(false)
                     .setRequiredNetworkType(NETWORK_TYPE_ANY)
                     .setPersisted(true)
                     .setExtras(bundle)
 
+            val freqInMillis = trip.beaconFrequency * ONE_MINUTE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder.setRequiresBatteryNotLow(true)
+                builder.setPeriodic(freqInMillis, (freqInMillis * 0.5f).toLong())
+            } else {
+                builder.setPeriodic(freqInMillis)
             }
 
             val scheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
