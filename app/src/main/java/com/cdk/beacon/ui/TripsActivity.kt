@@ -71,9 +71,8 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.action_filter -> {
-                filterDialog?.show(supportFragmentManager, "dialog")
-            }
+            R.id.action_filter -> filterDialog?.show(supportFragmentManager, "dialog")
+            R.id.logout -> presenter.onLogOutClicked()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -91,7 +90,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     }
 
     override fun showTrips(trips: MutableList<BeaconTrip?>) {
-        adapter.updateItems(trips, if(scheduler?.allPendingJobs?.isEmpty() == true) null else scheduler?.allPendingJobs?.get(0))
+        adapter.updateItems(trips, if (scheduler?.allPendingJobs?.isEmpty() == true) null else scheduler?.allPendingJobs?.get(0))
     }
 
     override fun startAddTripActivity() = startActivity<NewTripActivity>()
@@ -117,6 +116,12 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
                 LOCATION_PERMISSION_CODE)
     }
 
+    override fun logOutUser() {
+        firebaseAuth.signOut()
+        setResult(RESULT_LOGGED_OUT)
+        finish()
+    }
+
     override fun onTripClicked(trip: BeaconTrip, isActive: Boolean) {
         selectedTrip = trip
         presenter.tripClicked(trip, isActive, selectedTrip?.userId == firebaseAuth.currentUser?.uid)
@@ -136,5 +141,6 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
 
     companion object {
         private const val LOCATION_PERMISSION_CODE = 1234
+        const val RESULT_LOGGED_OUT = 3810
     }
 }

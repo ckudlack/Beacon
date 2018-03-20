@@ -60,4 +60,8 @@ class UserTripsPresenter(private var view: UserTripsContract.View, private var u
             }
         }
     }
+
+    override fun onLogOutClicked() {
+        view.logOutUser()
+    }
 }

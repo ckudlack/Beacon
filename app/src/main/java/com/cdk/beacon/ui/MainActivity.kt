@@ -1,14 +1,14 @@
 package com.cdk.beacon.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
 import com.cdk.beacon.R
 import com.cdk.beacon.mvp.contract.MainContract
 import com.cdk.beacon.mvp.presenter.MainPresenter
 import com.google.firebase.auth.FirebaseAuth
 import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.startActivityForResult
 
 @Suppress("unused")
 class MainActivity : AppCompatActivity(), MainContract.View {
@@ -27,23 +27,6 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         presenter.onStart(FirebaseAuth.getInstance().currentUser?.email)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.logout -> {
-                presenter.onLogOutClicked()
-            }
-            else -> {
-                return super.onOptionsItemSelected(item)
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun showLoading() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -60,22 +43,18 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         startActivity<LoginActivity>()
     }
 
-    override fun scheduleBeaconService() {
-    }
-
     override fun startTripsActivity() {
-        startActivity<TripsActivity>()
+        startActivityForResult<TripsActivity>(TRIPS_ACTIVITY_REQUEST_CODE)
     }
 
-    override fun close() {
-        finish()
-    }
-
-    override fun logOut() {
-        FirebaseAuth.getInstance().signOut()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == TRIPS_ACTIVITY_REQUEST_CODE && resultCode != TripsActivity.RESULT_LOGGED_OUT) {
+            finish()
+        }
     }
 
     companion object {
-        private val LOCATION_PERMISSION_CODE = 1234
+        private const val LOCATION_PERMISSION_CODE = 1234
+        private const val TRIPS_ACTIVITY_REQUEST_CODE = 4325
     }
 }

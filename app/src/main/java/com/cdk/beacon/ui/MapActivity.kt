@@ -115,9 +115,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
 
     private fun createBoundsFromList(items: List<MyLocation>): LatLngBounds {
         val boundsBuilder = LatLngBounds.Builder()
-        for (item in items) {
-            boundsBuilder.include(item.position)
-        }
+        items.forEach { boundsBuilder.include(it.position) }
         return boundsBuilder.build()
     }
 

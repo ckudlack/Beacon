@@ -6,15 +6,11 @@ import com.cdk.beacon.ui.BaseView
 interface MainContract {
 
     interface Presenter : BasePresenter {
-        fun onLogOutClicked()
         fun onStart(email : String?)
     }
 
     interface View : BaseView {
         fun startLoginActivity()
-        fun scheduleBeaconService()
-        fun logOut()
         fun startTripsActivity()
-        fun close()
     }
 }

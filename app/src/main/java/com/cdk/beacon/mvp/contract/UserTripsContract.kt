@@ -13,6 +13,7 @@ interface UserTripsContract {
         fun dontStartBeaconClicked(trip: BeaconTrip, isUsersTrip: Boolean)
         fun tripClicked(trip: BeaconTrip, isActive: Boolean, isUsersTrip: Boolean)
         fun onPermissionResult(trip: BeaconTrip?, isGranted: Boolean, isUsersTrip: Boolean)
+        fun onLogOutClicked()
     }
 
     interface View : BaseView {
@@ -22,5 +23,6 @@ interface UserTripsContract {
         fun startBeacon(trip: BeaconTrip)
         fun showAlertDialog(trip: BeaconTrip, isUsersTrip: Boolean)
         fun requestPermissions(trip: BeaconTrip)
+        fun logOutUser()
     }
 }
