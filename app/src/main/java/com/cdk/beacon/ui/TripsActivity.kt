@@ -48,7 +48,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
 
         firebaseAuth = FirebaseAuth.getInstance()
         presenter = UserTripsPresenter(this, TripsUseCase(UserTripsRepository(FirebaseFirestore.getInstance())))
-        adapter = TripsAdapter(this, if (scheduler?.allPendingJobs?.isEmpty() == true) null else scheduler?.allPendingJobs?.get(0), firebaseAuth.currentUser?.uid)
+        adapter = TripsAdapter(this, scheduler?.allPendingJobs?.takeIf { !it.isEmpty() }?.get(0), firebaseAuth.currentUser?.uid)
         filterDialog = FilterListDialogFragment.newInstance()
 
         trips_list.adapter = adapter
@@ -90,7 +90,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     }
 
     override fun showTrips(trips: MutableList<BeaconTrip?>) {
-        adapter.updateItems(trips, if (scheduler?.allPendingJobs?.isEmpty() == true) null else scheduler?.allPendingJobs?.get(0))
+        adapter.updateItems(trips, scheduler?.allPendingJobs?.takeIf { !it.isEmpty() }?.get(0))
     }
 
     override fun startAddTripActivity() = startActivity<NewTripActivity>()

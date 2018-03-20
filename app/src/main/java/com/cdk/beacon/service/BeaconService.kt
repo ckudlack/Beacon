@@ -165,6 +165,7 @@ class BeaconService : JobService() {
                     .setPeriodic(trip.beaconFrequency * ONE_MINUTE)
                     .setRequiresCharging(false)
                     .setRequiredNetworkType(NETWORK_TYPE_ANY)
+                    .setPersisted(true)
                     .setExtras(bundle)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
