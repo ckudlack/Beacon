@@ -3,10 +3,10 @@ package com.cdk.beacon.ui
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.preference.EditTextPreference
 import android.support.v7.preference.ListPreference
 import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat
-import android.support.v7.preference.PreferenceManager
 import android.view.MenuItem
 import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip
@@ -84,11 +84,18 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             addPreferencesFromResource(R.xml.pref_settings)
 
-            val namePreference = findPreference("trip_name")
-            namePreference.summary = arguments?.getParcelable<BeaconTrip>(TRIP)?.name
+            val trip = arguments?.getParcelable<BeaconTrip>(TRIP)
+
+            val namePreference = findPreference(TRIP_NAME) as EditTextPreference
+            namePreference.summary = trip?.name
+            namePreference.text = trip?.name
             namePreference.onPreferenceChangeListener = sBindPreferenceSummaryToValueListener
 
-            bindPreferenceSummaryToValue(findPreference("broadcast_frequency"))
+            val frequencyPreference = findPreference(BEACON_FREQ) as ListPreference
+            val index = frequencyPreference.findIndexOfValue(trip?.beaconFrequency.toString())
+            frequencyPreference.summary = frequencyPreference.entries[index]
+            frequencyPreference.value = trip?.beaconFrequency.toString()
+            frequencyPreference.onPreferenceChangeListener = sBindPreferenceSummaryToValueListener
         }
 
         override fun onPreferenceTreeClick(preference: Preference?): Boolean {
@@ -151,30 +158,11 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
             true
         }
 
-        /**
-         * Binds a preference's summary to its value. More specifically, when the
-         * preference's value is changed, its summary (line of text below the
-         * preference title) is updated to reflect the value. The summary is also
-         * immediately updated upon calling this method. The exact display format is
-         * dependent on the type of preference.
-
-         * @see .sBindPreferenceSummaryToValueListener
-         */
-        private fun bindPreferenceSummaryToValue(preference: Preference) {
-            // Set the listener to watch for value changes.
-            preference.onPreferenceChangeListener = sBindPreferenceSummaryToValueListener
-
-            // Trigger the listener immediately with the preference's
-            // current value.
-            sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                    PreferenceManager
-                            .getDefaultSharedPreferences(preference.context)
-                            .getString(preference.key, ""))
-        }
-
         companion object {
 
             private const val TRIP = "trip"
+            private const val TRIP_NAME = "trip_name"
+            private const val BEACON_FREQ = "broadcast_frequency"
 
             fun newInstance(trip: BeaconTrip): TripPreferenceFragment {
                 val fragment = TripPreferenceFragment()
