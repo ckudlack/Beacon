@@ -86,7 +86,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     }
 
     override fun showError(error: Throwable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        alert(error.message ?: "An error occurred", "Error").show()
     }
 
     override fun showTrips(trips: MutableList<BeaconTrip?>) {

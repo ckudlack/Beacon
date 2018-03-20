@@ -62,8 +62,7 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
 
     override fun updateSharedUsers(sharedUsers: List<String>) {
         trip.observers = sharedUsers
-        val sharedUserFragment = supportFragmentManager.findFragmentByTag(SHARED_USERS_TAG)
-        sharedUserFragment?.let {
+        supportFragmentManager.findFragmentByTag(SHARED_USERS_TAG)?.let {
             (it as SharedUserFragment).updateSharedUsers(sharedUsers)
         }
     }
