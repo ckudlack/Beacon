@@ -7,6 +7,7 @@ import com.cdk.beacon.mvp.contract.TripSettingsContract
 import com.cdk.beacon.mvp.usecase.TripSettingsUseCase
 import rx.functions.Action0
 import rx.functions.Action1
+import java.util.regex.Pattern
 
 class TripSettingsPresenter(private val view: TripSettingsContract.View, private val useCase: TripSettingsUseCase) : TripSettingsContract.Presenter {
 
@@ -29,6 +30,11 @@ class TripSettingsPresenter(private val view: TripSettingsContract.View, private
     }
 
     override fun onSharedUserAdded(email: String, trip: BeaconTrip) {
+        if (!isEmailValid(email)) {
+            view.showToast(R.string.valid_email_required)
+            return
+        }
+
         val mutableSharedUsers = trip.observers.toMutableList()
         mutableSharedUsers.add(email)
 
@@ -56,5 +62,16 @@ class TripSettingsPresenter(private val view: TripSettingsContract.View, private
 
     override fun onDestroy() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun isEmailValid(email: String): Boolean {
+        return Pattern.compile(
+                "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]|[\\w-]{2,}))@"
+                        + "((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                        + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
+                        + "([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                        + "[0-9]{1,2}|25[0-5]|2[0-4][0-9]))|"
+                        + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$"
+        ).matcher(email).matches()
     }
 }
