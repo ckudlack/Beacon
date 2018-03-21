@@ -6,9 +6,10 @@ import android.support.v7.app.AppCompatActivity
 import com.cdk.beacon.R
 import com.cdk.beacon.mvp.contract.MainContract
 import com.cdk.beacon.mvp.presenter.MainPresenter
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
-import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.startActivityForResult
+
 
 @Suppress("unused")
 class MainActivity : AppCompatActivity(), MainContract.View {
@@ -40,7 +41,11 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     }
 
     override fun startLoginActivity() {
-        startActivity<LoginActivity>()
+        val providers = listOf(
+                AuthUI.IdpConfig.GoogleBuilder().build(),
+                AuthUI.IdpConfig.EmailBuilder().build())
+
+        startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers).build(), LOGIN_ACTIVITY_REQUEST_CODE)
     }
 
     override fun startTripsActivity() {
@@ -56,5 +61,6 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     companion object {
         private const val LOCATION_PERMISSION_CODE = 1234
         private const val TRIPS_ACTIVITY_REQUEST_CODE = 4325
+        private const val LOGIN_ACTIVITY_REQUEST_CODE = 2598
     }
 }

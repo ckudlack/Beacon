@@ -19,6 +19,7 @@ import com.cdk.beacon.mvp.presenter.UserTripsPresenter
 import com.cdk.beacon.mvp.repository.UserTripsRepository
 import com.cdk.beacon.mvp.usecase.TripsUseCase
 import com.cdk.beacon.service.BeaconService
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_trips.*
@@ -117,7 +118,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     }
 
     override fun logOutUser() {
-        firebaseAuth.signOut()
+        AuthUI.getInstance().signOut(this)
         setResult(RESULT_LOGGED_OUT)
         finish()
     }
