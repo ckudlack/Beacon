@@ -1,5 +1,6 @@
 package com.cdk.beacon.ui
 
+import android.app.job.JobScheduler
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -99,6 +100,11 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
             frequencyPreference.summary = frequencyPreference.entries[index]
             frequencyPreference.value = trip?.beaconFrequency.toString()
             frequencyPreference.onPreferenceChangeListener = sBindPreferenceSummaryToValueListener
+
+            val scheduler = context?.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler?
+            val job = scheduler?.allPendingJobs?.takeIf { !it.isEmpty() }?.get(0)
+
+            findPreference(STOP_BROADCAST).isVisible = trip?.id == job?.extras?.getString("trip_id")
         }
 
         override fun onPreferenceTreeClick(preference: Preference?): Boolean {
@@ -110,7 +116,7 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
                             ?.add(android.R.id.content, SharedUserFragment.newInstance(trip?.observers
                                     ?: listOf()), SHARED_USERS_TAG)?.addToBackStack(null)?.commit()
                 }
-                preference?.key == "stop_broadcast" -> alert("This will end your current trip's broadcast", "Stop broadcasting?") {
+                preference?.key == STOP_BROADCAST -> alert("This will end your current trip's broadcast", "Stop broadcasting?") {
                     yesButton {
                         context?.let { BeaconService.stopBroadcasting(it) }
                     }
@@ -174,6 +180,7 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
             private const val TRIP = "trip"
             private const val TRIP_NAME = "trip_name"
             private const val BEACON_FREQ = "broadcast_frequency"
+            private const val STOP_BROADCAST = "stop_broadcast"
 
             fun newInstance(trip: BeaconTrip): TripPreferenceFragment {
                 val fragment = TripPreferenceFragment()
