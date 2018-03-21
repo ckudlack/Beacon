@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import com.cdk.beacon.ui.SharedUserFragment.OnListFragmentInteractionListener
 import kotlinx.android.synthetic.main.add_shared_user_item_view.view.*
 import kotlinx.android.synthetic.main.shared_user_item_view.view.*

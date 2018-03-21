@@ -14,8 +14,12 @@ import com.cdk.beacon.mvp.contract.TripSettingsContract
 import com.cdk.beacon.mvp.presenter.TripSettingsPresenter
 import com.cdk.beacon.mvp.repository.UserTripsRepository
 import com.cdk.beacon.mvp.usecase.TripSettingsUseCase
+import com.cdk.beacon.service.BeaconService
 import com.google.firebase.firestore.FirebaseFirestore
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.toast
+import org.jetbrains.anko.yesButton
 
 class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, SharedUserFragment.OnListFragmentInteractionListener, Listener {
 
@@ -98,12 +102,20 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
         }
 
         override fun onPreferenceTreeClick(preference: Preference?): Boolean {
-            if (preference?.key == "shared_options") {
-                val trip = arguments?.getParcelable<BeaconTrip>(TRIP)
+            when {
+                preference?.key == "shared_options" -> {
+                    val trip = arguments?.getParcelable<BeaconTrip>(TRIP)
 
-                fragmentManager?.beginTransaction()?.setCustomAnimations(R.anim.slide_in_right, 0, 0, R.anim.slide_out_right)
-                        ?.add(android.R.id.content, SharedUserFragment.newInstance(trip?.observers
-                                ?: listOf()), SHARED_USERS_TAG)?.addToBackStack(null)?.commit()
+                    fragmentManager?.beginTransaction()?.setCustomAnimations(R.anim.slide_in_right, 0, 0, R.anim.slide_out_right)
+                            ?.add(android.R.id.content, SharedUserFragment.newInstance(trip?.observers
+                                    ?: listOf()), SHARED_USERS_TAG)?.addToBackStack(null)?.commit()
+                }
+                preference?.key == "stop_broadcast" -> alert("This will end your current trip's broadcast", "Stop broadcasting?") {
+                    yesButton {
+                        context?.let { BeaconService.stopBroadcasting(it) }
+                    }
+                    noButton { }
+                }.show()
             }
             return super.onPreferenceTreeClick(preference)
         }

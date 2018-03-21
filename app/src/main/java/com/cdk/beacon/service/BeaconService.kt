@@ -145,24 +145,27 @@ class BeaconService : JobService() {
             val bundle = PersistableBundle()
             bundle.putString(TRIP_ID, trip.id)
 
+            val freqInMillis = trip.beaconFrequency * ONE_MINUTE
+
             val builder = JobInfo.Builder(JOB_ID, componentName)
                     .setRequiresCharging(false)
                     .setRequiredNetworkType(NETWORK_TYPE_ANY)
                     .setPersisted(true)
+                    .setPeriodic(freqInMillis)
                     .setExtras(bundle)
 
-            val freqInMillis = trip.beaconFrequency * ONE_MINUTE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder.setRequiresBatteryNotLow(true)
-                builder.setPeriodic(freqInMillis, (freqInMillis * 0.5f).toLong())
-            } else {
-                builder.setPeriodic(freqInMillis)
             }
 
             val scheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-
             scheduler.cancelAll()
             scheduler.schedule(builder.build())
+        }
+
+        fun stopBroadcasting(context: Context) {
+            val scheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            scheduler.cancelAll()
         }
     }
 }

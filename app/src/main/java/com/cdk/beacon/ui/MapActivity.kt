@@ -30,6 +30,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     private lateinit var presenter: MapContract.Presenter
     private var isUsersTrip: Boolean? = null
     private var trip: BeaconTrip? = null
+    private var googleMap: GoogleMap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +107,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     }
 
     override fun onMapReady(googleMap: GoogleMap, clusterManager: MapPagerClusterManager<MyLocation>): MapPagerMarkerRenderer<MyLocation> {
+        this.googleMap = googleMap
         return MyLocationMarkerRenderer(this, googleMap, clusterManager)
     }
 
@@ -115,7 +117,14 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
 
     private fun createBoundsFromList(items: List<MyLocation>): LatLngBounds {
         val boundsBuilder = LatLngBounds.Builder()
-        items.forEach { boundsBuilder.include(it.position) }
+//        val polylineOptions = PolylineOptions()
+
+        items.forEach {
+//            polylineOptions.add(LatLng(it.latitude, it.longitude))
+            boundsBuilder.include(it.position)
+        }
+
+//        googleMap?.addPolyline(polylineOptions.width(5f).color(Color.RED))
         return boundsBuilder.build()
     }
 

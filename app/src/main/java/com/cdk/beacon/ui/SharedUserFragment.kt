@@ -3,6 +3,7 @@ package com.cdk.beacon.ui
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -24,8 +25,10 @@ class SharedUserFragment : Fragment() {
         adapter = SharedUserAdapter(arguments?.getStringArrayList(SHARED_USERS_LIST)?.toMutableList(), mListener)
 
         // Set the adapter
-        view.shared_users_list.layoutManager = LinearLayoutManager(context)
+        val linearLayoutManager = LinearLayoutManager(context)
+        view.shared_users_list.layoutManager = linearLayoutManager
         view.shared_users_list.adapter = adapter
+        view.shared_users_list.addItemDecoration(DividerItemDecoration(context, linearLayoutManager.orientation))
 
         return view
     }

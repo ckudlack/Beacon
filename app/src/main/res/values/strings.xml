@@ -39,6 +39,7 @@
     <string name="update_frequency">Update frequency</string>
     <string name="beacon_frequency">Beacon frequency: %s</string>
     <string name="shared_with">Shared with:</string>
+    <string name="valid_email_required">Valid email required</string>
 
     <string-array name="pref_sync_frequency_titles">
         <item>15 minutes</item>
