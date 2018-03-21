@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
@@ -52,8 +53,11 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
         adapter = TripsAdapter(this, scheduler?.allPendingJobs?.takeIf { !it.isEmpty() }?.get(0), firebaseAuth.currentUser?.uid)
         filterDialog = FilterListDialogFragment.newInstance()
 
+        val linearLayoutManager = LinearLayoutManager(this)
+
         trips_list.adapter = adapter
-        trips_list.layoutManager = LinearLayoutManager(this)
+        trips_list.layoutManager = linearLayoutManager
+        trips_list.addItemDecoration(DividerItemDecoration(this, linearLayoutManager.orientation))
 
         add_trip_button.setOnClickListener { presenter.addTripClicked() }
     }
