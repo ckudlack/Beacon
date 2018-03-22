@@ -72,6 +72,11 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
         }
     }
 
+    override fun setBroadcastToNewFrequency(trip: BeaconTrip) {
+        this.trip = trip
+        BeaconService.schedule(this, trip)
+    }
+
     override fun onTripNameChanged(name: String) = presenter.onTripNameChanged(name, trip)
 
     override fun onBeaconFrequencyChanged(frequency: Int) = presenter.onBeaconFrequencyUpdated(frequency, trip)

@@ -9,6 +9,7 @@ interface TripSettingsContract {
     interface View : BaseView {
         fun showToast(textRes: Int)
         fun updateSharedUsers(sharedUsers: List<String>)
+        fun setBroadcastToNewFrequency(trip: BeaconTrip)
     }
 
     interface Presenter : BasePresenter {

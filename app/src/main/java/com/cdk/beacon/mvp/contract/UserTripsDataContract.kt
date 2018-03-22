@@ -15,6 +15,6 @@ interface UserTripsDataContract {
         fun getAllTrips(userId: String, userEmail: String): Observable<MutableList<BeaconTrip?>>
         fun setTripName(tripId: String, name: String) : Completable
         fun setSharedUsers(tripId: String, sharedUsers: List<String>) : Observable<List<String>>
-        fun setBeaconFrequency(tripId: String, frequency: Int) : Completable
+        fun setBeaconFrequency(tripId: String, frequency: Int): Observable<BeaconTrip>
     }
 }

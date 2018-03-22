@@ -1,6 +1,7 @@
 package com.cdk.beacon.mvp.usecase
 
 import com.cdk.beacon.DefaultSubscriber
+import com.cdk.beacon.data.BeaconTrip
 import com.cdk.beacon.mvp.contract.UserTripsDataContract
 import rx.functions.Action0
 import rx.functions.Action1
@@ -15,7 +16,7 @@ class TripSettingsUseCase(private val repository: UserTripsDataContract.Reposito
         execute(repository.setSharedUsers(tripId, sharedUsers), subscriber)
     }
 
-    fun updateBeaconFrequency(frequency: Int, tripId: String, onSuccess: Action0, onError: Action1<Throwable>) {
-        execute(repository.setBeaconFrequency(tripId, frequency), onSuccess, onError)
+    fun updateBeaconFrequency(frequency: Int, tripId: String, subscriber: DefaultSubscriber<BeaconTrip>) {
+        execute(repository.setBeaconFrequency(tripId, frequency), subscriber)
     }
 }

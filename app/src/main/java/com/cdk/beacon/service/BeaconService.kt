@@ -90,8 +90,6 @@ class BeaconService : JobService() {
         val currentTimeMillis = System.currentTimeMillis()
         val database = FirebaseFirestore.getInstance()
 
-        toast("Sent location")
-
         database.collection("locations")
                 .document(tripId)
                 .collection("beacons")

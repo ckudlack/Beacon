@@ -74,7 +74,7 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
         }
     }
 
-    override fun setBeaconFrequency(tripId: String, frequency: Int): Completable {
-        return RxFirestoreDatabase.updateValue(database.collection("trips").document(tripId).update("beaconFrequency", frequency)).toCompletable()
+    override fun setBeaconFrequency(tripId: String, frequency: Int): Observable<BeaconTrip> {
+        return RxFirestoreDatabase.updateValue(database.collection("trips").document(tripId).update("beaconFrequency", frequency)).flatMap { getTrip(tripId) }
     }
 }
