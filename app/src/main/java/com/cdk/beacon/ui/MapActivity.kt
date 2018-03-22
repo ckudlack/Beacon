@@ -1,5 +1,6 @@
 package com.cdk.beacon.ui
 
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -22,6 +23,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.firebase.firestore.FirebaseFirestore
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.startActivity
 
 class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContract.View, GoogleMap.InfoWindowAdapter {
@@ -31,6 +34,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     private var isUsersTrip: Boolean? = null
     private var trip: BeaconTrip? = null
     private var googleMap: GoogleMap? = null
+    private var dialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,9 +55,9 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
 
         isUsersTrip = intent.getBooleanExtra("isUsersTrip", true)
 
-        trip?.let { presenter.getLocations("timeStamp", it.id) }
-
         title = trip?.name
+
+        dialog = indeterminateProgressDialog("")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -89,6 +93,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     override fun onStart() {
         super.onStart()
         mapPagerView.onStart()
+        trip?.let { presenter.getLocations("timeStamp", it.id) }
     }
 
     override fun onStop() {
@@ -120,7 +125,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
 //        val polylineOptions = PolylineOptions()
 
         items.forEach {
-//            polylineOptions.add(LatLng(it.latitude, it.longitude))
+            //            polylineOptions.add(LatLng(it.latitude, it.longitude))
             boundsBuilder.include(it.position)
         }
 
@@ -129,15 +134,15 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     }
 
     override fun showLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        dialog?.show()
     }
 
     override fun hideLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        dialog?.hide()
     }
 
     override fun showError(error: Throwable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        alert(error.message ?: "An error has occurred", "Error").show()
     }
 
     override fun displayLocations(locations: List<MyLocation>) {

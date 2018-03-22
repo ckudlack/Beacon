@@ -14,8 +14,10 @@ class MapPresenter(private var view: MapContract.View, private var useCase: MapU
     }
 
     override fun getLocations(sortByValue: String, tripId: String) {
+        view.showLoading()
         useCase.getLocationList(sortByValue, tripId, object : DefaultSubscriber<List<MyLocation>>() {
             override fun onNext(myLocations: List<MyLocation>) {
+                view.hideLoading()
                 view.displayLocations(myLocations)
             }
         })
