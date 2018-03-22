@@ -44,7 +44,6 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View, SharedUserFra
             }
             true
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -70,15 +69,12 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View, SharedUserFra
     }
 
     override fun showLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun hideLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun showError(error: Throwable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun goToStartBeaconActivity() {

@@ -1,8 +1,11 @@
 package com.cdk.beacon
 
 import android.content.Context
+import android.text.Spannable
+import android.text.SpannableStringBuilder
 import android.text.format.DateFormat
 import android.text.format.DateUtils
+import android.text.style.RelativeSizeSpan
 import org.joda.time.LocalDate
 import java.util.*
 
@@ -15,23 +18,33 @@ class DateTimeUtils {
             return format(context, timeStamp, DateUtils.FORMAT_NO_YEAR or DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_WEEKDAY or DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_ABBREV_WEEKDAY or DateUtils.FORMAT_SHOW_TIME)
         }
 
-        fun formatNumericDate(context: Context, date: LocalDate): String {
-            return format(context, date, DateUtils.FORMAT_NUMERIC_DATE)
-        }
-
-        fun formatWithDayAndMonth(timeStamp: Long): String {
+        fun formatWithDayAndMonth(timeStamp: Long): SpannableStringBuilder {
             val cal = Calendar.getInstance(Locale.ENGLISH)
             cal.timeInMillis = timeStamp
-            return DateFormat.format("M/dd", cal).toString()
+
+            val date = DateFormat.format("M/dd", cal)
+
+            val builder = SpannableStringBuilder(date)
+//            builder.setSpan(RelativeSizeSpan(0.65f), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+//            builder.setSpan(RelativeSizeSpan(0.65f), 2, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+//            builder.setSpan(SuperscriptSpan(), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+//            builder.setSpan(SubscriptSpan(), 2, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            return builder
         }
 
-        fun formatWithTimeOnly(timeStamp: Long): String {
+        fun formatWithTimeOnly(timeStamp: Long): SpannableStringBuilder {
             val cal = Calendar.getInstance(Locale.ENGLISH)
             cal.timeInMillis = timeStamp
-            return DateFormat.format("h:mm aa", cal).toString()
+            val time = DateFormat.format("h:mm aa", cal).toString()
+
+            val builder = SpannableStringBuilder(time)
+            builder.setSpan(RelativeSizeSpan(0.7f), time.length - 3, time.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            return builder
         }
 
-        fun formatMarkerLabel(timeStamp: Long): String {
+        fun formatMarkerLabel(timeStamp: Long): SpannableStringBuilder {
             return when (isToday(timeStamp)) {
                 true -> formatWithTimeOnly(timeStamp)
                 false -> formatWithDayAndMonth(timeStamp)
