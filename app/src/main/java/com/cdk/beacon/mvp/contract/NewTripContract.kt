@@ -8,9 +8,12 @@ interface NewTripContract {
 
     interface Presenter : BasePresenter {
         fun addTrip(userId: String, trip: BeaconTrip)
+        fun onSharedUserAdded(email: String)
     }
 
     interface View : BaseView {
         fun goToStartBeaconActivity()
+        fun addToList(email: String)
+        fun showToast(text: Int)
     }
 }

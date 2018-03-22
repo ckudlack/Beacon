@@ -1,6 +1,7 @@
 package com.cdk.beacon.mvp.presenter
 
 import com.cdk.beacon.DefaultSubscriber
+import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip
 import com.cdk.beacon.mvp.contract.NewTripContract
 import com.cdk.beacon.mvp.usecase.NewTripUseCase
@@ -23,8 +24,15 @@ class NewTripPresenter(private val useCase: NewTripUseCase, private val view: Ne
         useCase.addTrip(userId, trip, object : DefaultSubscriber<List<BeaconTrip>>() {
             override fun onNext(t: List<BeaconTrip>) {
                 view.goToStartBeaconActivity()
-                onCompleted()
             }
         })
+    }
+
+    override fun onSharedUserAdded(email: String) {
+        if (TripSettingsPresenter.isEmailValid(email)) {
+            view.addToList(email)
+        } else {
+            view.showToast(R.string.valid_email_required)
+        }
     }
 }

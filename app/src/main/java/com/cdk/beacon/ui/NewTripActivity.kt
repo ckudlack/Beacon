@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_new_trip.*
 import org.jetbrains.anko.selector
+import org.jetbrains.anko.toast
 
 class NewTripActivity : AppCompatActivity(), NewTripContract.View, SharedUserFragment.OnListFragmentInteractionListener {
 
@@ -84,14 +85,22 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View, SharedUserFra
         finish()
     }
 
+    override fun addToList(email: String) {
+        sharedUsers?.add(email)
+        fragment?.updateSharedUsers(sharedUsers?.toList())
+    }
+
+    override fun showToast(text: Int) {
+        toast(text)
+    }
+
     override fun onSharedUserRemoved(itemPosition: Int) {
         sharedUsers?.removeAt(itemPosition)
         fragment?.updateSharedUsers(sharedUsers?.toList())
     }
 
     override fun onSharedUserAdded(email: String) {
-        sharedUsers?.add(email)
-        fragment?.updateSharedUsers(sharedUsers?.toList())
+        presenter.onSharedUserAdded(email)
     }
 
     companion object {
