@@ -161,9 +161,15 @@ class BeaconService : JobService() {
             scheduler.schedule(builder.build())
         }
 
-        fun stopBroadcasting(context: Context) {
+        fun stopAllBroadcasts(context: Context) {
             val scheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
             scheduler.cancelAll()
+        }
+
+        fun stopBroadcasting(context: Context, tripId: String) {
+            val scheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            val runningJob = scheduler.allPendingJobs.takeIf { !it.isEmpty() }?.get(0)?.takeIf { it.extras.getString(TRIP_ID) == tripId }
+            runningJob?.let { scheduler.cancel(it.id) }
         }
     }
 }

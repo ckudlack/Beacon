@@ -17,6 +17,7 @@ import com.cdk.beacon.mvp.presenter.TripSettingsPresenter
 import com.cdk.beacon.mvp.repository.UserTripsRepository
 import com.cdk.beacon.mvp.usecase.TripSettingsUseCase
 import com.cdk.beacon.service.BeaconService
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import org.jetbrains.anko.*
 import org.jetbrains.anko.support.v4.alert
@@ -80,9 +81,19 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
         BeaconService.schedule(this, trip)
     }
 
+    override fun returnToTripsActivity() {
+        startActivity(intentFor<TripsActivity>().clearTop())
+    }
+
+    override fun stopBroadcasting(tripId: String) {
+        BeaconService.stopBroadcasting(this, tripId)
+    }
+
     override fun onTripNameChanged(name: String) = presenter.onTripNameChanged(name, trip)
 
     override fun onBeaconFrequencyChanged(frequency: Int) = presenter.onBeaconFrequencyUpdated(frequency, trip)
+
+    override fun onDeleteTripConfirmed() = presenter.deleteTrip(trip.id)
 
     class TripPreferenceFragment : PreferenceFragmentCompat() {
 
@@ -113,12 +124,14 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
             val job = scheduler?.allPendingJobs?.takeIf { !it.isEmpty() }?.get(0)
 
             findPreference(STOP_BROADCAST).isVisible = trip?.id == job?.extras?.getString("trip_id")
+            findPreference(DELETE_TRIP).isVisible = trip?.userId == FirebaseAuth.getInstance().currentUser?.uid
         }
 
         override fun onPreferenceTreeClick(preference: Preference?): Boolean {
+            val trip = arguments?.getParcelable<BeaconTrip>(TRIP)
+
             when {
                 preference?.key == "shared_options" -> {
-                    val trip = arguments?.getParcelable<BeaconTrip>(TRIP)
 
                     fragmentManager?.beginTransaction()?.setCustomAnimations(R.anim.slide_in_right, 0, 0, R.anim.slide_out_right)
                             ?.add(android.R.id.content, SharedUserFragment.newInstance(trip?.observers
@@ -126,7 +139,13 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
                 }
                 preference?.key == STOP_BROADCAST -> alert(getString(R.string.end_trip_broadcast), getString(R.string.stop_broadcasting)) {
                     yesButton {
-                        context?.let { BeaconService.stopBroadcasting(it) }
+                        context?.let { BeaconService.stopAllBroadcasts(it) }
+                    }
+                    noButton { }
+                }.show()
+                preference?.key == DELETE_TRIP -> alert(getString(R.string.permanent_deletion_warning), getString(R.string.warning)) {
+                    yesButton {
+                        listener?.onDeleteTripConfirmed()
                     }
                     noButton { }
                 }.show()
@@ -189,6 +208,7 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
             private const val TRIP_NAME = "trip_name"
             private const val BEACON_FREQ = "broadcast_frequency"
             private const val STOP_BROADCAST = "stop_broadcast"
+            private const val DELETE_TRIP = "delete_trip"
 
             fun newInstance(trip: BeaconTrip): TripPreferenceFragment {
                 val fragment = TripPreferenceFragment()
@@ -208,4 +228,5 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
 interface Listener {
     fun onTripNameChanged(name: String)
     fun onBeaconFrequencyChanged(frequency: Int)
+    fun onDeleteTripConfirmed()
 }

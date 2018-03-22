@@ -7,6 +7,6 @@ import rx.Subscriber
 class NewTripUseCase(private val repository: UserTripsDataContract.Repository) : UseCase() {
 
     fun addTrip(userId: String, trip: BeaconTrip, subscriber: Subscriber<List<BeaconTrip>>) {
-        execute(repository.addTrip(userId, trip), subscriber)
+        execute(repository.addTrip(trip), subscriber)
     }
 }

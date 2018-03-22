@@ -10,6 +10,8 @@ interface TripSettingsContract {
         fun showToast(textRes: Int)
         fun updateSharedUsers(sharedUsers: List<String>)
         fun setBroadcastToNewFrequency(trip: BeaconTrip)
+        fun returnToTripsActivity()
+        fun stopBroadcasting(tripId: String)
     }
 
     interface Presenter : BasePresenter {
@@ -17,5 +19,6 @@ interface TripSettingsContract {
         fun onSharedUserRemoved(index: Int, trip: BeaconTrip)
         fun onBeaconFrequencyUpdated(frequency: Int, trip: BeaconTrip)
         fun onSharedUserAdded(email: String, trip: BeaconTrip)
+        fun deleteTrip(tripId: String)
     }
 }

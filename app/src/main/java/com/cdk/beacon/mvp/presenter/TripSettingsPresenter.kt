@@ -61,6 +61,18 @@ class TripSettingsPresenter(private val view: TripSettingsContract.View, private
         }
     }
 
+    override fun deleteTrip(tripId: String) {
+        view.showLoading()
+        useCase.deleteTrip(tripId, object : DefaultSubscriber<Boolean>() {
+            override fun onNext(t: Boolean) {
+                view.hideLoading()
+                view.showToast(R.string.trip_deleted)
+                view.stopBroadcasting(tripId)
+                view.returnToTripsActivity()
+            }
+        })
+    }
+
     override fun onStop() {
         useCase.clear()
     }

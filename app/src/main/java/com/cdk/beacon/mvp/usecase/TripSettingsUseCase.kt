@@ -19,4 +19,8 @@ class TripSettingsUseCase(private val repository: UserTripsDataContract.Reposito
     fun updateBeaconFrequency(frequency: Int, tripId: String, subscriber: DefaultSubscriber<BeaconTrip>) {
         execute(repository.setBeaconFrequency(tripId, frequency), subscriber)
     }
+
+    fun deleteTrip(tripId: String, subscriber: DefaultSubscriber<Boolean>) {
+        execute(repository.deleteTrip(tripId), subscriber)
+    }
 }

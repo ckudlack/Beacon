@@ -27,4 +27,8 @@
         android:key="stop_broadcast"
         android:title="Stop broadcasting"/>
 
+    <Preference
+        android:key="delete_trip"
+        android:title="Delete trip"/>
+
 </PreferenceScreen>

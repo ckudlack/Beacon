@@ -21,7 +21,7 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
         })
     }
 
-    override fun addTrip(userId: String, trip: BeaconTrip): Observable<List<BeaconTrip>> {
+    override fun addTrip(trip: BeaconTrip): Observable<List<BeaconTrip>> {
         return RxFirestoreDatabase.addValue(database.collection("trips").add(trip.toFirebaseTrip())).flatMap { isSuccessful ->
             if (isSuccessful) {
                 // do something
@@ -76,5 +76,9 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
 
     override fun setBeaconFrequency(tripId: String, frequency: Int): Observable<BeaconTrip> {
         return RxFirestoreDatabase.updateValue(database.collection("trips").document(tripId).update("beaconFrequency", frequency)).flatMap { getTrip(tripId) }
+    }
+
+    override fun deleteTrip(tripId: String) : Observable<Boolean> {
+        return RxFirestoreDatabase.updateValue(database.collection("trips").document(tripId).delete())
     }
 }

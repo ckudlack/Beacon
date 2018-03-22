@@ -44,6 +44,10 @@
     <string name="stop_broadcasting">Stop broadcasting?</string>
     <string name="pause_active_trip">This will pause any other active trip</string>
     <string name="start_broadcasting">Start broadcasting?</string>
+    <string name="removed_from_trip">Removed from trip</string>
+    <string name="trip_deleted">Trip deleted</string>
+    <string name="permanent_deletion_warning">This will permanently delete your trip and all of its data. Are you sure?</string>
+    <string name="warning">Warning</string>
 
     <string-array name="pref_sync_frequency_titles">
         <item>15 minutes</item>
