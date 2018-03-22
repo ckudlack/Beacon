@@ -26,6 +26,7 @@ class MyLocationMarkerRenderer(context: Context, map: GoogleMap, clusterManager:
     }
 
     override fun setClusterItemViewBackground(isSelected: Boolean) {
+        clusterItemIconGenerator.setContentView(clusterItemText)
         clusterItemIconGenerator.setColor(ContextCompat.getColor(context, if (isSelected) android.R.color.black else android.R.color.white))
     }
 
@@ -34,12 +35,24 @@ class MyLocationMarkerRenderer(context: Context, map: GoogleMap, clusterManager:
     }
 
     override fun setupClusterItemView(item: MyLocation?, isSelected: Boolean) {
-        clusterItemText.text = item?.index.toString()
+        // need to set this again, so the markers not oversized
+        clusterItemIconGenerator.setContentView(clusterItemText)
+        clusterItemText.text = item?.let { DateTimeUtils.formatMarkerLabel(it.timeStamp) }
         clusterItemText.setTextColor(ContextCompat.getColor(context, if (isSelected) android.R.color.white else android.R.color.black))
     }
 
     override fun setupClusterView(cluster: Cluster<MyLocation>?, isSelected: Boolean) {
-        clusterText.text = context.resources.getString(R.string.cluster_text, cluster?.items?.size)
+        var min = Long.MAX_VALUE
+        var max = Long.MIN_VALUE
+
+        cluster?.items?.forEach {
+            when {
+                it.timeStamp < min -> min = it.timeStamp
+                it.timeStamp > max -> max = it.timeStamp
+            }
+        }
+
+        clusterText.text = context.resources.getString(R.string.cluster_text, DateTimeUtils.formatMarkerLabel(min), DateTimeUtils.formatMarkerLabel(max))
         clusterText.setTextColor(ContextCompat.getColor(context, if (isSelected) android.R.color.white else android.R.color.black))
     }
 }
