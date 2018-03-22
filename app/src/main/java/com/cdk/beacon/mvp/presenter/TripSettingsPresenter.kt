@@ -38,20 +38,24 @@ class TripSettingsPresenter(private val view: TripSettingsContract.View, private
         val mutableSharedUsers = trip.observers.toMutableList()
         mutableSharedUsers.add(email)
 
+        view.showLoading()
         useCase.updateSharedUsers(mutableSharedUsers.toList(), trip.id, object : DefaultSubscriber<List<String>>() {
             override fun onNext(t: List<String>) {
                 view.showToast(R.string.user_added)
                 view.updateSharedUsers(t)
+                view.hideLoading()
             }
         })
     }
 
     override fun onBeaconFrequencyUpdated(frequency: Int, trip: BeaconTrip) {
         if (frequency != trip.beaconFrequency) {
+            view.showLoading()
             useCase.updateBeaconFrequency(frequency, trip.id, object : DefaultSubscriber<BeaconTrip>() {
                 override fun onNext(t: BeaconTrip) {
                     view.showToast(R.string.frequency_updated)
                     view.setBroadcastToNewFrequency(t)
+                    view.hideLoading()
                 }
             })
         }

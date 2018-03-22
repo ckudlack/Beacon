@@ -1,5 +1,6 @@
 package com.cdk.beacon.ui
 
+import android.app.ProgressDialog
 import android.app.job.JobScheduler
 import android.content.Context
 import android.os.Bundle
@@ -17,15 +18,17 @@ import com.cdk.beacon.mvp.repository.UserTripsRepository
 import com.cdk.beacon.mvp.usecase.TripSettingsUseCase
 import com.cdk.beacon.service.BeaconService
 import com.google.firebase.firestore.FirebaseFirestore
-import org.jetbrains.anko.noButton
+import org.jetbrains.anko.*
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.toast
-import org.jetbrains.anko.yesButton
 
 class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, SharedUserFragment.OnListFragmentInteractionListener, Listener {
 
     private lateinit var trip: BeaconTrip
     private lateinit var presenter: TripSettingsContract.Presenter
+
+    private val dialog: ProgressDialog? by lazy {
+        indeterminateProgressDialog("")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,15 +55,15 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
     override fun onSharedUserAdded(email: String) = presenter.onSharedUserAdded(email, trip)
 
     override fun showLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        dialog?.show()
     }
 
     override fun hideLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        dialog?.hide()
     }
 
     override fun showError(error: Throwable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        alert(error.message ?: getString(R.string.error_occurred), getString(R.string.error)).show()
     }
 
     override fun showToast(textRes: Int) = toast(textRes)
@@ -121,7 +124,7 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
                             ?.add(android.R.id.content, SharedUserFragment.newInstance(trip?.observers
                                     ?: listOf()), SHARED_USERS_TAG)?.addToBackStack(null)?.commit()
                 }
-                preference?.key == STOP_BROADCAST -> alert("This will end your current trip's broadcast", "Stop broadcasting?") {
+                preference?.key == STOP_BROADCAST -> alert(getString(R.string.end_trip_broadcast), getString(R.string.stop_broadcasting)) {
                     yesButton {
                         context?.let { BeaconService.stopBroadcasting(it) }
                     }

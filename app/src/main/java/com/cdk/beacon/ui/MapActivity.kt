@@ -142,7 +142,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     }
 
     override fun showError(error: Throwable) {
-        alert(error.message ?: "An error has occurred", "Error").show()
+        alert(error.message ?: getString(R.string.error_occurred), getString(R.string.error)).show()
     }
 
     override fun displayLocations(locations: List<MyLocation>) {

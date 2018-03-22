@@ -91,7 +91,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     }
 
     override fun showError(error: Throwable) {
-        alert(error.message ?: "An error occurred", "Error").show()
+        alert(error.message ?: getString(R.string.error_occurred), getString(R.string.error)).show()
     }
 
     override fun showTrips(trips: MutableList<BeaconTrip?>) {
@@ -106,7 +106,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     override fun startBeacon(trip: BeaconTrip) = BeaconService.schedule(this, trip)
 
     override fun showAlertDialog(trip: BeaconTrip, isUsersTrip: Boolean) {
-        alert("This will pause any other active trip", "Start broadcasting?") {
+        alert(getString(R.string.pause_active_trip), getString(R.string.start_broadcasting)) {
             yesButton {
                 presenter.startBeaconClicked(trip, ContextCompat.checkSelfPermission(baseContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                         ContextCompat.checkSelfPermission(baseContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED, isUsersTrip)
