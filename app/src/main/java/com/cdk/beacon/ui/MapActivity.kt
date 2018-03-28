@@ -12,8 +12,11 @@ import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip
 import com.cdk.beacon.data.MyLocation
 import com.cdk.beacon.mvp.contract.MapContract
+import com.cdk.beacon.mvp.datasource.UserLocalDataSource
+import com.cdk.beacon.mvp.datasource.UserRemoteDataSource
 import com.cdk.beacon.mvp.presenter.MapPresenter
 import com.cdk.beacon.mvp.repository.LocationRepository
+import com.cdk.beacon.mvp.repository.UserRepository
 import com.cdk.beacon.mvp.usecase.MapUseCase
 import com.cdk.bettermapsearch.MapPagerView
 import com.cdk.bettermapsearch.clustering.MapPagerClusterManager
@@ -23,9 +26,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.firebase.firestore.FirebaseFirestore
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.indeterminateProgressDialog
-import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.*
 
 class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContract.View, GoogleMap.InfoWindowAdapter {
 
@@ -34,7 +35,9 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     private var isUsersTrip: Boolean? = null
     private var trip: BeaconTrip? = null
     private var googleMap: GoogleMap? = null
-    private var dialog: ProgressDialog? = null
+    private val dialog: ProgressDialog? by lazy {
+        indeterminateProgressDialog("")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +47,9 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
 
         trip = intent.getParcelableExtra("trip")
 
-        presenter = MapPresenter(this, MapUseCase(LocationRepository(FirebaseFirestore.getInstance())))
+        val firestore = FirebaseFirestore.getInstance()
+        presenter = MapPresenter(this, MapUseCase(LocationRepository(firestore),
+                UserRepository(UserLocalDataSource(defaultSharedPreferences), UserRemoteDataSource(firestore))))
 
         mapPagerView = findViewById(R.id.map_pager)
         mapPagerView.onCreate(savedInstanceState)
@@ -56,8 +61,6 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         isUsersTrip = intent.getBooleanExtra("isUsersTrip", true)
 
         title = trip?.name
-
-        dialog = indeterminateProgressDialog("")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -68,6 +71,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         isUsersTrip?.let {
             menu?.findItem(R.id.action_settings)?.isVisible = it
+            menu?.findItem(R.id.action_leave_trip)?.isVisible = !it
         }
         return super.onPrepareOptionsMenu(menu)
     }
@@ -75,6 +79,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.action_settings -> presenter.settingsButtonClicked()
+            R.id.action_leave_trip -> presenter.leaveTripClicked()
             android.R.id.home -> finish()
         }
         return super.onOptionsItemSelected(item)
@@ -152,5 +157,16 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
 
     override fun launchSettingsActivity() {
         startActivity<TripSettingsActivity>("trip" to (trip ?: listOf<BeaconTrip>()))
+    }
+
+    override fun showLeaveTripAlertDialog() {
+        alert(getString(R.string.leave_trip_warning), getString(R.string.warning)) {
+            yesButton { presenter.leaveTripConfirmed(trip?.id) }
+            noButton {}
+        }.show()
+    }
+
+    override fun goToTripsActivity() {
+        finish()
     }
 }

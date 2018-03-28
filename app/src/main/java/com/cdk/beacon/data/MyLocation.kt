@@ -5,18 +5,22 @@ import com.cdk.bettermapsearch.interfaces.MapClusterItem
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 
 @IgnoreExtraProperties
 @Parcelize
 data class MyLocation(val longitude: Double, val latitude: Double, val timeStamp: Long) : MapClusterItem, Parcelable {
 
+    @IgnoredOnParcel
     @Exclude
     var index: Int? = null
 
+    @IgnoredOnParcel
     @Exclude
     override var isSelected: Boolean = false
 
+    @IgnoredOnParcel
     @Exclude
     override var isViewed: Boolean = false
 

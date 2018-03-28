@@ -60,6 +60,11 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
         trips_list.addItemDecoration(DividerItemDecoration(this, linearLayoutManager.orientation))
 
         add_trip_button.setOnClickListener { presenter.addTripClicked() }
+        refresh_layout.setOnRefreshListener {
+            firebaseAuth.currentUser?.let { presenter.getTrips(it.uid, it.email ?: "", 0) }
+        }
+
+        title = resources.getStringArray(R.array.filter_titles)[0]
     }
 
     override fun onStart() {
@@ -133,6 +138,7 @@ class TripsActivity : AppCompatActivity(), UserTripsContract.View, TripsAdapter.
     }
 
     override fun onFilterItemClicked(position: Int) {
+        title = resources.getStringArray(R.array.filter_titles)[position]
         filterDialog?.dismiss()
         firebaseAuth.currentUser?.let {
             presenter.getTrips(it.uid, it.email ?: "", position)

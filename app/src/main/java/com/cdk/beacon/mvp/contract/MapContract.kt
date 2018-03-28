@@ -9,10 +9,14 @@ interface MapContract {
     interface Presenter : BasePresenter {
         fun getLocations(sortByValue: String, tripId: String)
         fun settingsButtonClicked()
+        fun leaveTripClicked()
+        fun leaveTripConfirmed(tripId: String?)
     }
 
     interface View : BaseView {
         fun displayLocations(locations: List<MyLocation>)
         fun launchSettingsActivity()
+        fun showLeaveTripAlertDialog()
+        fun goToTripsActivity()
     }
 }

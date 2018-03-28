@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_settings_white"
         android:title=""
         app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_leave_trip"
+        android:title="@string/leave_trip"
+        app:showAsAction="never"/>
 </menu>

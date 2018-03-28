@@ -57,7 +57,7 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View, SharedUserFra
                 // if there is no current user, force a crash
                 val userId = FirebaseAuth.getInstance().currentUser!!.uid
                 presenter.addTrip(userId, BeaconTrip(ArrayList(), trip_name_edittext.text.toString(), sharedUsers?.toList()
-                        ?: listOf(), "", userId, beacon_frequency.tag as Int))
+                        ?: listOf(), "", userId, beacon_frequency.tag as Int, System.currentTimeMillis(), System.currentTimeMillis()))
             }
         }
         return super.onOptionsItemSelected(item)

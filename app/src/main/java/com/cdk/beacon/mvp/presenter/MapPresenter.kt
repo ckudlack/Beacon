@@ -23,6 +23,28 @@ class MapPresenter(private var view: MapContract.View, private var useCase: MapU
         })
     }
 
+    override fun leaveTripClicked() {
+        view.showLeaveTripAlertDialog()
+    }
+
+    override fun leaveTripConfirmed(tripId: String?) {
+        val user = useCase.getUser()
+
+        user.trips?.let {
+            view.showLoading()
+
+            val trips = user.trips.toMutableList()
+            trips.remove(tripId)
+
+            useCase.leaveTrip(user.id, trips.toList(), object : DefaultSubscriber<Boolean>() {
+                override fun onNext(t: Boolean) {
+                    view.hideLoading()
+                    view.goToTripsActivity()
+                }
+            })
+        }
+    }
+
     override fun onStop() {
     }
 

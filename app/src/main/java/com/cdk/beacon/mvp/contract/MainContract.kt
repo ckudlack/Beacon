@@ -7,6 +7,7 @@ interface MainContract {
 
     interface Presenter : BasePresenter {
         fun onStart(email : String?)
+        fun onSignInReturnedSuccessfully(userId: String)
     }
 
     interface View : BaseView {

@@ -48,6 +48,14 @@
     <string name="trip_deleted">Trip deleted</string>
     <string name="permanent_deletion_warning">This will permanently delete your trip and all of its data. Are you sure?</string>
     <string name="warning">Warning</string>
+    <string name="leave_trip">Leave trip</string>
+    <string name="leave_trip_warning">Are you sure you want to leave this trip?</string>
+
+    <string-array name="filter_titles">
+        <item>@string/all_trips</item>
+        <item>@string/my_trips</item>
+        <item>@string/shared_trips</item>
+    </string-array>
 
     <string-array name="pref_sync_frequency_titles">
         <item>15 minutes</item>
