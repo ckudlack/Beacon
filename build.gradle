@@ -39,7 +39,7 @@ ext {
 
     // App dependencies
     supportLibraryVersion = '27.0.2'
-    playServicesVersion = '11.8.0'
+    playServicesVersion = '12.0.0'
     mockitoVersion = '2.8.9'
     espressoVersion = '2.2.2'
     retrofitVersion = '2.3.0'
