@@ -1,11 +1,14 @@
 package com.cdk.beacon.ui
 
 import android.app.ProgressDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.cdk.beacon.LocationListener
 import com.cdk.beacon.LocationPagerAdapter
 import com.cdk.beacon.MyLocationMarkerRenderer
 import com.cdk.beacon.R
@@ -28,7 +31,8 @@ import com.google.android.gms.maps.model.Marker
 import com.google.firebase.firestore.FirebaseFirestore
 import org.jetbrains.anko.*
 
-class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContract.View, GoogleMap.InfoWindowAdapter {
+
+class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContract.View, GoogleMap.InfoWindowAdapter, LocationListener {
 
     private lateinit var mapPagerView: MapPagerView<MyLocation>
     private lateinit var presenter: MapContract.Presenter
@@ -53,7 +57,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
 
         mapPagerView = findViewById(R.id.map_pager)
         mapPagerView.onCreate(savedInstanceState)
-        mapPagerView.setAdapter(LocationPagerAdapter())
+        mapPagerView.setAdapter(LocationPagerAdapter(this))
         mapPagerView.getMapAsync(this)
         mapPagerView.setClusteringEnabled(false)
         mapPagerView.customInfoWindowAdapter = this
@@ -168,5 +172,14 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
 
     override fun goToTripsActivity() {
         finish()
+    }
+
+    override fun directionsClicked(latitude: Double, longitude: Double) {
+        val gmmIntentUri = Uri.parse("geo:0,0?q=$latitude,$longitude(User's+Location)")
+        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        mapIntent.`package` = "com.google.android.apps.maps"
+        if (mapIntent.resolveActivity(packageManager) != null) {
+            startActivity(mapIntent)
+        }
     }
 }
