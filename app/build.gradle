@@ -11,8 +11,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "0.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -41,8 +41,6 @@ dependencies {
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
     implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:customtabs:$rootProject.supportLibraryVersion"
     implementation "com.android.support:preference-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:preference-v14:$rootProject.supportLibraryVersion"
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -52,7 +50,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:$rootProject.playServicesVersion"
     implementation "com.google.android.gms:play-services-maps:$rootProject.playServicesVersion"
     implementation "com.google.android.gms:play-services-auth:$rootProject.playServicesVersion"
-    implementation "com.google.android.gms:play-services-places:$rootProject.playServicesVersion"
+//    implementation "com.google.android.gms:play-services-places:$rootProject.playServicesVersion"
     implementation "com.squareup.okhttp3:okhttp:$rootProject.okhttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.okhttpVersion"
     implementation "com.squareup.retrofit2:converter-moshi:$rootProject.retrofitVersion"
@@ -70,10 +68,10 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.5.1'
     implementation 'com.jakewharton.rxbinding:rxbinding:0.4.0'
     implementation 'com.google.maps.android:android-maps-utils:0.5'
-    implementation 'de.greenrobot:eventbus:2.4.0'
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
-    implementation "android.arch.lifecycle:runtime:$rootProject.lifecycleVersion"
-    implementation "android.arch.lifecycle:extensions:$rootProject.lifecycleVersion"
+//    implementation 'de.greenrobot:eventbus:2.4.0'
+//    implementation 'com.github.bumptech.glide:glide:3.7.0'
+//    implementation "android.arch.lifecycle:runtime:$rootProject.lifecycleVersion"
+//    implementation "android.arch.lifecycle:extensions:$rootProject.lifecycleVersion"
     implementation 'net.danlew:android.joda:2.9.9'
     kapt 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
