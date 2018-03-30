@@ -35,6 +35,11 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         presenter.onStart(FirebaseAuth.getInstance().currentUser?.email)
     }
 
+    override fun onStart() {
+        super.onStart()
+        presenter.onStart()
+    }
+
     override fun showLoading() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

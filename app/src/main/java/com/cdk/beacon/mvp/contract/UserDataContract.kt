@@ -12,16 +12,19 @@ interface UserDataContract {
         fun getUser(userId: String) : Observable<BeaconUser>
         fun getUser() : BeaconUser
         fun setUser(user : BeaconUser)
+        fun setRegistrationToken(userId: String, token: String): Observable<Boolean>
     }
 
     interface RemoteDataSource : BaseDataSource {
         fun getUser(userId: String): Observable<BeaconUser>
         fun updateTripsSharedWithMe(userId: String, tripsSharedWithMe: List<String>): Observable<Boolean>
+        fun setRegistrationToken(userId: String, token: String): Observable<Boolean>
     }
 
     interface LocalDataSource : BaseDataSource {
         fun getUser(): BeaconUser
         fun setUser(user: BeaconUser)
         fun setTripSharedWithMe(tripsList : List<String>?)
+        fun setRegistrationToken(token: String)
     }
 }

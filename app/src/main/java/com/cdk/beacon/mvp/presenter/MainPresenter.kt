@@ -4,6 +4,8 @@ import com.cdk.beacon.DefaultSubscriber
 import com.cdk.beacon.data.BeaconUser
 import com.cdk.beacon.mvp.contract.MainContract
 import com.cdk.beacon.mvp.usecase.MainUseCase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.iid.FirebaseInstanceId
 
 
 class MainPresenter(private val view: MainContract.View, private val useCase: MainUseCase) : MainContract.Presenter {
@@ -17,6 +19,16 @@ class MainPresenter(private val view: MainContract.View, private val useCase: Ma
     }
 
     override fun onStart() {
+        useCase.getUser()
+                ?.takeIf { it.fcmToken != FirebaseInstanceId.getInstance().token }
+                ?.takeIf { FirebaseAuth.getInstance().currentUser?.uid != null }
+                ?.let {
+                    useCase.sendRegistrationToken(it.id, FirebaseInstanceId.getInstance().token!!, object : DefaultSubscriber<Boolean>() {
+                        override fun onNext(t: Boolean) {
+                            view.startTripsActivity()
+                        }
+                    })
+                }
     }
 
     override fun onStop() = useCase.clear()

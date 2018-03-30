@@ -9,6 +9,10 @@ import rx.Observable
 
 class UserRemoteDataSource(private val database: FirebaseFirestore) : UserDataContract.RemoteDataSource {
 
+    override fun setRegistrationToken(userId: String, token: String): Observable<Boolean> {
+        return RxFirestoreDatabase.updateValue(database.collection("users").document(userId).update("fcmToken", token))
+    }
+
     override fun getUser(userId: String): Observable<BeaconUser> {
         return RxFirestoreDatabase.getSingleDocument(database.collection("users").document(userId).get()).flatMap { documentSnapshot ->
             Observable.just(documentSnapshot.toObject(FirebaseUser::class.java).toBeaconUser(documentSnapshot.id))

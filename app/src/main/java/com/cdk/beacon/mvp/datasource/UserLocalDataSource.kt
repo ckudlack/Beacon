@@ -6,6 +6,10 @@ import com.cdk.beacon.mvp.contract.UserDataContract
 
 class UserLocalDataSource(private val sharedPrefs: SharedPreferences) : UserDataContract.LocalDataSource {
 
+    override fun setRegistrationToken(token: String) {
+        sharedPrefs.edit().putString(USER_TOKEN, token).apply()
+    }
+
     override fun setTripSharedWithMe(tripsList: List<String>?) {
         val tripSet = mutableSetOf<String>()
         tripsList?.forEach { tripSet.add(it) }
@@ -29,13 +33,14 @@ class UserLocalDataSource(private val sharedPrefs: SharedPreferences) : UserData
         val uname = sharedPrefs.getString(USER_NAME, null)
         val email = sharedPrefs.getString(USER_EMAIL, null)
         val tripsSet = sharedPrefs.getStringSet(TRIPS_SHARED_WITH_ME, null)
+        val fcmToken = sharedPrefs.getString(USER_TOKEN, null)
 
         val tripsList = mutableListOf<String>()
         tripsSet.forEach {
             tripsList.add(it)
         }
 
-        return BeaconUser(uid, uname, email, tripsList.toList())
+        return BeaconUser(uid, uname, email, tripsList.toList(), fcmToken)
     }
 
     companion object {
@@ -43,5 +48,6 @@ class UserLocalDataSource(private val sharedPrefs: SharedPreferences) : UserData
         const val USER_NAME = "user_name"
         const val USER_EMAIL = "user_email"
         const val TRIPS_SHARED_WITH_ME = "trips_shared_with_me"
+        const val USER_TOKEN = "user_token"
     }
 }

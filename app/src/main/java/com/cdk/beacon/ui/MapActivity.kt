@@ -134,7 +134,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
 //        val polylineOptions = PolylineOptions()
 
         items.forEach {
-            //            polylineOptions.add(LatLng(it.latitude, it.longitude))
+//            polylineOptions.add(it.position)
             boundsBuilder.include(it.position)
         }
 
