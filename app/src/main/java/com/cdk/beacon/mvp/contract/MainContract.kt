@@ -8,6 +8,7 @@ interface MainContract {
     interface Presenter : BasePresenter {
         fun onStart(email : String?)
         fun onSignInReturnedSuccessfully(userId: String)
+        fun clearUserData()
     }
 
     interface View : BaseView {

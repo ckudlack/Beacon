@@ -15,4 +15,8 @@ class MainUseCase(private val repository: UserDataContract.Repository) : UseCase
     }
 
     fun getUser(): BeaconUser? = repository.getUser()
+
+    fun clearUserData() {
+        repository.clearUserData()
+    }
 }

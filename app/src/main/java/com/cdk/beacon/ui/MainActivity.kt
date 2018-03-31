@@ -90,6 +90,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 showSnackbar(R.string.unknown_error);*/
             }
         } else if (requestCode == TRIPS_ACTIVITY_REQUEST_CODE && resultCode == TripsActivity.RESULT_LOGGED_OUT) {
+            presenter.clearUserData()
             startLoginActivity()
         }
     }

@@ -13,6 +13,7 @@ interface UserDataContract {
         fun getUser() : BeaconUser
         fun setUser(user : BeaconUser)
         fun setRegistrationToken(userId: String, token: String): Observable<Boolean>
+        fun clearUserData()
     }
 
     interface RemoteDataSource : BaseDataSource {
@@ -26,5 +27,6 @@ interface UserDataContract {
         fun setUser(user: BeaconUser)
         fun setTripSharedWithMe(tripsList : List<String>?)
         fun setRegistrationToken(token: String)
+        fun clearData()
     }
 }

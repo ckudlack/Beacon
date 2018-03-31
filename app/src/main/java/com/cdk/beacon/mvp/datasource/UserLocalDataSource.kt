@@ -6,6 +6,10 @@ import com.cdk.beacon.mvp.contract.UserDataContract
 
 class UserLocalDataSource(private val sharedPrefs: SharedPreferences) : UserDataContract.LocalDataSource {
 
+    override fun clearData() {
+        sharedPrefs.edit().clear().apply()
+    }
+
     override fun setRegistrationToken(token: String) {
         sharedPrefs.edit().putString(USER_TOKEN, token).apply()
     }
@@ -36,7 +40,7 @@ class UserLocalDataSource(private val sharedPrefs: SharedPreferences) : UserData
         val fcmToken = sharedPrefs.getString(USER_TOKEN, null)
 
         val tripsList = mutableListOf<String>()
-        tripsSet.forEach {
+        tripsSet?.forEach {
             tripsList.add(it)
         }
 

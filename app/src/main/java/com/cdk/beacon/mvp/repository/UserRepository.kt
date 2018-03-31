@@ -6,6 +6,10 @@ import rx.Observable
 
 class UserRepository(private val localDataSource: UserDataContract.LocalDataSource, private val remoteDataSource: UserDataContract.RemoteDataSource) : UserDataContract.Repository {
 
+    override fun clearUserData() {
+        localDataSource.clearData()
+    }
+
     override fun setRegistrationToken(userId: String, token: String): Observable<Boolean> {
         return remoteDataSource.setRegistrationToken(userId, token).map {
             localDataSource.setRegistrationToken(token)
