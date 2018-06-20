@@ -26,8 +26,7 @@ import com.cdk.bettermapsearch.clustering.MapPagerClusterManager
 import com.cdk.bettermapsearch.clustering.MapPagerMarkerRenderer
 import com.cdk.bettermapsearch.interfaces.MapReadyCallback
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.*
 import com.google.firebase.firestore.FirebaseFirestore
 import org.jetbrains.anko.*
 
@@ -157,6 +156,20 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     override fun displayLocations(locations: List<MyLocation>) {
         mapPagerView.updateMapItems(locations, false)
         mapPagerView.moveCameraToBounds(createBoundsFromList(locations), 200)
+    }
+
+    private fun createDotMarkers(locations: List<MyLocation>) {
+        locations.forEachIndexed { index, myLocation ->
+            if (index == 0 || index == locations.size - 1) {
+                googleMap?.addMarker(MarkerOptions()
+                        .title(if (index == 0) getString(R.string.start) else getString(R.string.end))
+                        .position(LatLng(myLocation.latitude, myLocation.longitude)))
+            } else {
+                googleMap?.addMarker(MarkerOptions()
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_dot))
+                        .position(LatLng(myLocation.latitude, myLocation.longitude)))
+            }
+        }
     }
 
     override fun launchSettingsActivity() {

@@ -50,6 +50,8 @@
     <string name="warning">Warning</string>
     <string name="leave_trip">Leave trip</string>
     <string name="leave_trip_warning">Are you sure you want to leave this trip?</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
 
     <string-array name="filter_titles">
         <item>@string/all_trips</item>
