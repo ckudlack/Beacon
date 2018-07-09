@@ -9,8 +9,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.cdk.beacon.LocationListener
-import com.cdk.beacon.LocationPagerAdapter
-import com.cdk.beacon.MyLocationMarkerRenderer
 import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip
 import com.cdk.beacon.data.MyLocation
@@ -21,19 +19,16 @@ import com.cdk.beacon.mvp.presenter.MapPresenter
 import com.cdk.beacon.mvp.repository.LocationRepository
 import com.cdk.beacon.mvp.repository.UserRepository
 import com.cdk.beacon.mvp.usecase.MapUseCase
-import com.cdk.bettermapsearch.MapPagerView
-import com.cdk.bettermapsearch.clustering.MapPagerClusterManager
-import com.cdk.bettermapsearch.clustering.MapPagerMarkerRenderer
-import com.cdk.bettermapsearch.interfaces.MapReadyCallback
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.model.*
 import com.google.firebase.firestore.FirebaseFirestore
 import org.jetbrains.anko.*
 
 
-class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContract.View, GoogleMap.InfoWindowAdapter, LocationListener {
+class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowAdapter, LocationListener {
 
-    private lateinit var mapPagerView: MapPagerView<MyLocation>
     private lateinit var presenter: MapContract.Presenter
     private var isUsersTrip: Boolean? = null
     private var trip: BeaconTrip? = null
@@ -54,12 +49,9 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         presenter = MapPresenter(this, MapUseCase(LocationRepository(firestore),
                 UserRepository(UserLocalDataSource(defaultSharedPreferences), UserRemoteDataSource(firestore))))
 
-        mapPagerView = findViewById(R.id.map_pager)
-        mapPagerView.onCreate(savedInstanceState)
-        mapPagerView.setAdapter(LocationPagerAdapter(this))
-        mapPagerView.getMapAsync(this)
-        mapPagerView.setClusteringEnabled(false)
-        mapPagerView.customInfoWindowAdapter = this
+        val mapFragment = fragmentManager
+                .findFragmentById(R.id.map) as MapFragment
+        mapFragment.getMapAsync{ googleMap = it }
 
         isUsersTrip = intent.getBooleanExtra("isUsersTrip", true)
 
@@ -88,40 +80,9 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onResume() {
-        super.onResume()
-        mapPagerView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mapPagerView.onPause()
-    }
-
     override fun onStart() {
         super.onStart()
-        mapPagerView.onStart()
         trip?.let { presenter.getLocations("timeStamp", it.id) }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        mapPagerView.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapPagerView.onDestroy()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapPagerView.onLowMemory()
-    }
-
-    override fun onMapReady(googleMap: GoogleMap, clusterManager: MapPagerClusterManager<MyLocation>): MapPagerMarkerRenderer<MyLocation> {
-        this.googleMap = googleMap
-        return MyLocationMarkerRenderer(this, googleMap, clusterManager)
     }
 
     override fun getInfoContents(marker: Marker?): View? = null
@@ -134,7 +95,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
 
         items.forEach {
 //            polylineOptions.add(it.position)
-            boundsBuilder.include(it.position)
+            boundsBuilder.include(it.getPosition())
         }
 
 //        googleMap?.addPolyline(polylineOptions.width(5f).color(Color.RED))
@@ -154,15 +115,16 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
     }
 
     override fun displayLocations(locations: List<MyLocation>) {
-        mapPagerView.updateMapItems(locations, false)
-        mapPagerView.moveCameraToBounds(createBoundsFromList(locations), 200)
+        createDotMarkers(locations)
+
+        googleMap?.animateCamera(CameraUpdateFactory.newLatLngBounds(createBoundsFromList(locations), 100))
     }
 
     private fun createDotMarkers(locations: List<MyLocation>) {
         locations.forEachIndexed { index, myLocation ->
             if (index == 0 || index == locations.size - 1) {
                 googleMap?.addMarker(MarkerOptions()
-                        .title(if (index == 0) getString(R.string.start) else getString(R.string.end))
+                        .title(if (index == 0) getString(R.string.start) else getString(R.string.today))
                         .position(LatLng(myLocation.latitude, myLocation.longitude)))
             } else {
                 googleMap?.addMarker(MarkerOptions()
@@ -183,9 +145,7 @@ class MapActivity : AppCompatActivity(), MapReadyCallback<MyLocation>, MapContra
         }.show()
     }
 
-    override fun goToTripsActivity() {
-        finish()
-    }
+    override fun goToTripsActivity() = finish()
 
     override fun directionsClicked(latitude: Double, longitude: Double) {
         val gmmIntentUri = Uri.parse("geo:0,0?q=$latitude,$longitude(User's+Location)")

@@ -14,17 +14,17 @@ class TripsAdapter(private val callback: TripClickedCallback, private var active
 
     private val tripList: MutableList<BeaconTrip?> = mutableListOf()
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val viewHolder : ViewHolder
 
         if (viewType == R.layout.trips_item_view) {
-            viewHolder = TripsViewHolder(LayoutInflater.from(parent?.context).inflate(viewType, parent, false))
+            viewHolder = TripsViewHolder(LayoutInflater.from(parent.context).inflate(viewType, parent, false))
             viewHolder.itemView.setOnClickListener {
                 val adapterPosition = viewHolder.adapterPosition
                 callback.onTripClicked(tripList[adapterPosition]!!, tripList[adapterPosition]!!.id == activeJob?.extras?.getString("trip_id") ?: "")
             }
         } else {
-            viewHolder = TripsHeaderViewHolder(LayoutInflater.from(parent?.context).inflate(viewType, parent, false))
+            viewHolder = TripsHeaderViewHolder(LayoutInflater.from(parent.context).inflate(viewType, parent, false))
             viewHolder.itemView.setOnClickListener {  } // do nothing when clicked
         }
         return viewHolder
@@ -32,7 +32,7 @@ class TripsAdapter(private val callback: TripClickedCallback, private var active
 
     override fun getItemCount(): Int = tripList.size
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is TripsViewHolder -> holder.bind(tripList[position], activeJob?.extras?.getString("trip_id"))
             is TripsHeaderViewHolder -> holder.bind(position == 0)

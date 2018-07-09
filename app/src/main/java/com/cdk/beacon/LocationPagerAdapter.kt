@@ -1,16 +1,8 @@
 package com.cdk.beacon
 
-import android.annotation.SuppressLint
-import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import com.cdk.beacon.data.MyLocation
-import com.cdk.bettermapsearch.MapPagerAdapter
-import kotlinx.android.synthetic.main.pager_item_view.view.*
+class LocationPagerAdapter(private val listener: LocationListener) /*: MapPagerAdapter<MyLocation, ItemViewHolder>()*/ {
 
-class LocationPagerAdapter(private val listener: LocationListener) : MapPagerAdapter<MyLocation, ItemViewHolder>() {
-
-    @SuppressLint("MissingSuperCall")
+    /*@SuppressLint("MissingSuperCall")
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
 
@@ -21,7 +13,7 @@ class LocationPagerAdapter(private val listener: LocationListener) : MapPagerAda
         holder.time.text = formattedDateTime
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ItemViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val itemViewHolder = ItemViewHolder(LayoutInflater.from(parent?.context).inflate(R.layout.pager_item_view, parent, false))
         itemViewHolder.itemView.directions_button.setOnClickListener {
             itemViewHolder.adapterPosition
@@ -29,7 +21,7 @@ class LocationPagerAdapter(private val listener: LocationListener) : MapPagerAda
                     ?.let { listener.directionsClicked(backingList[it].latitude, backingList[it].longitude) }
         }
         return itemViewHolder
-    }
+    }*/
 }
 
 interface LocationListener {

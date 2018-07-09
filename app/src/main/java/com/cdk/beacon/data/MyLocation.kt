@@ -1,7 +1,6 @@
 package com.cdk.beacon.data
 
 import android.os.Parcelable
-import com.cdk.bettermapsearch.interfaces.MapClusterItem
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties
@@ -10,7 +9,7 @@ import kotlinx.android.parcel.Parcelize
 
 @IgnoreExtraProperties
 @Parcelize
-data class MyLocation(val longitude: Double, val latitude: Double, val timeStamp: Long) : MapClusterItem, Parcelable {
+data class MyLocation(val longitude: Double, val latitude: Double, val timeStamp: Long) : Parcelable {
 
     @IgnoredOnParcel
     @Exclude
@@ -18,24 +17,20 @@ data class MyLocation(val longitude: Double, val latitude: Double, val timeStamp
 
     @IgnoredOnParcel
     @Exclude
-    override var isSelected: Boolean = false
-
-    @IgnoredOnParcel
-    @Exclude
-    override var isViewed: Boolean = false
+    var isSelected: Boolean = false
 
     @Exclude
-    override fun getPosition(): LatLng {
+    fun getPosition(): LatLng {
         return LatLng(latitude, longitude)
     }
 
     @Exclude
-    override fun getSnippet(): String {
+    fun getSnippet(): String {
         return ""
     }
 
     @Exclude
-    override fun getTitle(): String {
+    fun getTitle(): String {
         return ""
     }
 }
