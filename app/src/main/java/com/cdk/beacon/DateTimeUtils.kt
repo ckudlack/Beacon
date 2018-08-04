@@ -7,6 +7,7 @@ import android.text.format.DateFormat
 import android.text.format.DateUtils
 import android.text.style.RelativeSizeSpan
 import org.joda.time.LocalDate
+import org.joda.time.LocalDateTime
 import java.util.*
 
 
@@ -65,6 +66,18 @@ class DateTimeUtils {
 
         private fun format(context: Context, date: LocalDate, flags: Int): String {
             return DateUtils.formatDateTime(context, date.toDateTimeAtStartOfDay().millis, flags)
+        }
+
+        // Apr 13 12:00 AM
+        fun format(context: Context, timeStamp: Long): String {
+//            val time = Calendar.getInstance()
+//            time.timeInMillis = timeStamp
+
+            return format(context, timeStamp, DateUtils.FORMAT_NO_YEAR or DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_SHOW_TIME)
+        }
+
+        private fun format(context: Context, date: LocalDateTime, flags: Int): String {
+            return DateUtils.formatDateTime(context, date.toDateTime().millis, flags)
         }
     }
 }

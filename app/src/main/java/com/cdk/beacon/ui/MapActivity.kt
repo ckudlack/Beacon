@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.PagerSnapHelper
+import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -12,6 +14,9 @@ import com.cdk.beacon.LocationListener
 import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip
 import com.cdk.beacon.data.MyLocation
+import com.cdk.beacon.map.MapController
+import com.cdk.beacon.map.MapItem
+import com.cdk.beacon.map.Position
 import com.cdk.beacon.mvp.contract.MapContract
 import com.cdk.beacon.mvp.datasource.UserLocalDataSource
 import com.cdk.beacon.mvp.datasource.UserRemoteDataSource
@@ -24,6 +29,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.model.*
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.activity_map.*
 import org.jetbrains.anko.*
 
 
@@ -36,6 +42,7 @@ class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowA
     private val dialog: ProgressDialog? by lazy {
         indeterminateProgressDialog("")
     }
+    private val controller = MapController()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +63,15 @@ class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowA
         isUsersTrip = intent.getBooleanExtra("isUsersTrip", true)
 
         title = trip?.name
+
+        setupRecyclerView()
+        val snapHelper = PagerSnapHelper()
+        snapHelper.attachToRecyclerView(recycler_view)
+    }
+
+    private fun setupRecyclerView() = with(recycler_view) {
+        layoutManager = android.support.v7.widget.LinearLayoutManager(this@MapActivity, RecyclerView.HORIZONTAL, false)
+        adapter = controller.adapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -116,8 +132,8 @@ class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowA
 
     override fun displayLocations(locations: List<MyLocation>) {
         createDotMarkers(locations)
-
         googleMap?.animateCamera(CameraUpdateFactory.newLatLngBounds(createBoundsFromList(locations), 100))
+        controller.setData(locations.map { MapItem(Position(it.latitude, it.longitude), it.timeStamp) }.toList())
     }
 
     private fun createDotMarkers(locations: List<MyLocation>) {

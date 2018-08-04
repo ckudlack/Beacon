@@ -45,7 +45,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:preference-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:preference-v14:$rootProject.supportLibraryVersion"
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation "com.google.android.gms:play-services-base:$rootProject.playServicesVersion"
     implementation "com.google.android.gms:play-services-basement:$rootProject.playServicesVersion"
     implementation "com.google.android.gms:play-services-gcm:$rootProject.playServicesVersion"
@@ -75,12 +75,10 @@ dependencies {
 //    implementation "android.arch.lifecycle:runtime:$rootProject.lifecycleVersion"
 //    implementation "android.arch.lifecycle:extensions:$rootProject.lifecycleVersion"
     implementation 'net.danlew:android.joda:2.9.9'
-    kapt 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.firebaseui:firebase-ui-auth:3.2.2'
     implementation 'com.airbnb.android:epoxy:2.14.0'
-    // Add the annotation processor if you are using Epoxy's annotations (recommended)
-    annotationProcessor 'com.airbnb.android:epoxy-processor:2.14.0'
+    kapt "com.airbnb.android:epoxy-processor:2.14.0"
 }
 
 apply plugin: 'com.google.gms.google-services'
