@@ -71,6 +71,7 @@ class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowA
         title = trip?.name
 
         setupRecyclerView()
+
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(recycler_view)
     }
@@ -82,10 +83,8 @@ class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowA
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                // if dy>0 scrolling down side
-                // if dy<0 scrolling upper side
                 if (dx != 0) {
-                    val position = (layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+                    val position = (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                     if (position >= 0) {
                         googleMap?.moveCamera(CameraUpdateFactory.newLatLng(controller.currentData?.get(position)?.position?.toLatLng()))
                     }
