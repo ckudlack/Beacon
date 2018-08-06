@@ -33,7 +33,7 @@ import kotlinx.android.synthetic.main.activity_map.*
 import org.jetbrains.anko.*
 
 
-class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowAdapter, LocationListener {
+class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowAdapter, LocationListener, GoogleMap.OnMarkerClickListener {
 
     private lateinit var presenter: MapContract.Presenter
     private var isUsersTrip: Boolean? = null
@@ -58,7 +58,11 @@ class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowA
 
         val mapFragment = fragmentManager
                 .findFragmentById(R.id.map) as MapFragment
-        mapFragment.getMapAsync{ googleMap = it }
+
+        mapFragment.getMapAsync {
+            googleMap = it
+            googleMap?.setOnMarkerClickListener(this)
+        }
 
         isUsersTrip = intent.getBooleanExtra("isUsersTrip", true)
 
@@ -136,16 +140,24 @@ class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowA
         controller.setData(locations.map { MapItem(Position(it.latitude, it.longitude), it.timeStamp) }.toList())
     }
 
+    override fun onMarkerClick(marker: Marker?): Boolean {
+        val index = marker?.tag?.toString()?.toIntOrNull()
+        recycler_view.scrollToPosition(index!!)
+        return true
+    }
+
     private fun createDotMarkers(locations: List<MyLocation>) {
         locations.forEachIndexed { index, myLocation ->
             if (index == 0 || index == locations.size - 1) {
-                googleMap?.addMarker(MarkerOptions()
+                val marker = googleMap?.addMarker(MarkerOptions()
                         .title(if (index == 0) getString(R.string.start) else getString(R.string.today))
                         .position(LatLng(myLocation.latitude, myLocation.longitude)))
+                marker?.tag = index.toString()
             } else {
-                googleMap?.addMarker(MarkerOptions()
+                val marker = googleMap?.addMarker(MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_dot))
                         .position(LatLng(myLocation.latitude, myLocation.longitude)))
+                marker?.tag = index.toString()
             }
         }
     }
