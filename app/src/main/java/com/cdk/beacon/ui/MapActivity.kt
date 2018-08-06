@@ -5,7 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.PagerSnapHelper
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.LinearSnapHelper
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
@@ -17,6 +18,7 @@ import com.cdk.beacon.data.MyLocation
 import com.cdk.beacon.map.MapController
 import com.cdk.beacon.map.MapItem
 import com.cdk.beacon.map.Position
+import com.cdk.beacon.map.toLatLng
 import com.cdk.beacon.mvp.contract.MapContract
 import com.cdk.beacon.mvp.datasource.UserLocalDataSource
 import com.cdk.beacon.mvp.datasource.UserRemoteDataSource
@@ -69,13 +71,27 @@ class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowA
         title = trip?.name
 
         setupRecyclerView()
-        val snapHelper = PagerSnapHelper()
+        val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(recycler_view)
     }
 
     private fun setupRecyclerView() = with(recycler_view) {
         layoutManager = android.support.v7.widget.LinearLayoutManager(this@MapActivity, RecyclerView.HORIZONTAL, false)
         adapter = controller.adapter
+        addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                // if dy>0 scrolling down side
+                // if dy<0 scrolling upper side
+                if (dx != 0) {
+                    val position = (layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+                    if (position >= 0) {
+                        googleMap?.moveCamera(CameraUpdateFactory.newLatLng(controller.currentData?.get(position)?.position?.toLatLng()))
+                    }
+                }
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
