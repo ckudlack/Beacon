@@ -132,7 +132,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun addUserToDB(task: Task<AuthResult>) {
         if (task.isSuccessful) {
-            val user = task.result.user
+//            val user = task.result!!.user
 
             // TODO: Do this with a DB trigger instead
             // add the user to the Firebase DB (separate from the Firebase Auth DB)

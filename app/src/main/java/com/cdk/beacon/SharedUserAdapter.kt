@@ -65,18 +65,18 @@ class SharedUserAdapter(usersList: List<String>?, private val callback: OnListFr
         }
     }
 
-    class SharedUserViewHolder(itemView: View?) : ViewHolder(itemView) {
+    class SharedUserViewHolder(itemView: View) : ViewHolder(itemView) {
         fun bind(userEmail: String) {
             itemView.user_email.text = userEmail
         }
     }
 
-    class AddSharedUserViewHolder(itemView: View?) : ViewHolder(itemView) {
+    class AddSharedUserViewHolder(itemView: View) : ViewHolder(itemView) {
         fun bind() {
-            itemView.user_name_edittext.text.clear()
+            itemView.user_name_edittext.text?.clear()
         }
     }
 
-    abstract class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView)
+    abstract class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }
 

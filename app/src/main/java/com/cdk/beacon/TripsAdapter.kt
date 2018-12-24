@@ -53,16 +53,16 @@ class TripsAdapter(private val callback: TripClickedCallback, private var active
         notifyDataSetChanged()
     }
 
-    abstract class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView)
+    abstract class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-    class TripsViewHolder(itemView: View?) : ViewHolder(itemView) {
+    class TripsViewHolder(itemView: View) : ViewHolder(itemView) {
         fun bind(trip: BeaconTrip?, tripId: String?) {
             itemView.trip_name.text = trip?.name
             itemView.trip_active.visibility = if (tripId == trip?.id) View.VISIBLE else View.INVISIBLE
         }
     }
 
-    class TripsHeaderViewHolder(itemView: View?) : ViewHolder(itemView) {
+    class TripsHeaderViewHolder(itemView: View) : ViewHolder(itemView) {
         fun bind(isMyTrip: Boolean) {
             itemView.header.textResource = if (isMyTrip) R.string.my_trips else R.string.shared_trips
         }

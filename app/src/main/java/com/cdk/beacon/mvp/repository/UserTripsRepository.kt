@@ -35,7 +35,7 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
             val tripList = mutableListOf<BeaconTrip?>()
             querySnapshot.documents.forEach {
                 val firebaseTrip = it.toObject(FirebaseTrip::class.java)
-                tripList.add(firebaseTrip.toBeaconTrip(it.id))
+                tripList.add(firebaseTrip?.toBeaconTrip(it.id))
             }
             Observable.just(tripList)
         }
@@ -44,7 +44,7 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
     override fun getTrip(tripId: String): Observable<BeaconTrip> {
         return RxFirestoreDatabase.getSingleDocument(database.collection("trips").document(tripId).get()).flatMap { documentSnapshot ->
             val trip = documentSnapshot.toObject(FirebaseTrip::class.java)
-            Observable.just(trip.toBeaconTrip(documentSnapshot.id))
+            Observable.just(trip?.toBeaconTrip(documentSnapshot.id))
         }
     }
 
@@ -53,7 +53,7 @@ class UserTripsRepository(private val database: FirebaseFirestore) : UserTripsDa
         return RxFirestoreDatabase.getSingleValue(database.collection("trips").whereEqualTo("observers.$sanitizedEmail", true).get()).flatMap { querySnapshot ->
             val tripList = mutableListOf<BeaconTrip?>()
             querySnapshot.documents.forEach {
-                tripList.add(it.toObject(FirebaseTrip::class.java).toBeaconTrip(it.id))
+                tripList.add(it.toObject(FirebaseTrip::class.java)?.toBeaconTrip(it.id))
             }
             Observable.just(tripList)
         }

@@ -15,7 +15,7 @@ class LocationRepository(private val database: FirebaseFirestore) : MapDataContr
                 .orderBy("timeStamp").get()).flatMap { querySnapshot: QuerySnapshot ->
             val locationList = ArrayList<MyLocation>()
             querySnapshot.documents.forEach {
-                val latitude = it.data["latitude"] as Double
+                val latitude = it.data!!["latitude"] as Double
                 val longitude = it["longitude"] as Double
                 val timestamp = it["timeStamp"] as Long
 

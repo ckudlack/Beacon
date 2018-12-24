@@ -15,7 +15,7 @@ class UserRemoteDataSource(private val database: FirebaseFirestore) : UserDataCo
 
     override fun getUser(userId: String): Observable<BeaconUser> {
         return RxFirestoreDatabase.getSingleDocument(database.collection("users").document(userId).get()).flatMap { documentSnapshot ->
-            Observable.just(documentSnapshot.toObject(FirebaseUser::class.java).toBeaconUser(documentSnapshot.id))
+            Observable.just(documentSnapshot.toObject(FirebaseUser::class.java)?.toBeaconUser(documentSnapshot.id))
         }
     }
 

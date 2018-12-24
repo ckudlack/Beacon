@@ -32,15 +32,15 @@ class NewTripActivity : AppCompatActivity(), NewTripContract.View, SharedUserFra
         presenter = NewTripPresenter(NewTripUseCase(UserTripsRepository(FirebaseFirestore.getInstance())), this)
         fragment = SharedUserFragment.newInstance(sharedUsers?.toList())
 
-        supportFragmentManager.beginTransaction().replace(R.id.shared_users_content_view, fragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.shared_users_content_view, fragment!!).commit()
 
         beacon_frequency.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 val frequencies = resources.getStringArray(R.array.pref_sync_frequency_titles).asList()
-                selector(resources.getString(R.string.pref_title_sync_frequency), frequencies, { _, i ->
+                selector(resources.getString(R.string.pref_title_sync_frequency), frequencies) { _, i ->
                     beacon_frequency.setText(frequencies[i])
                     beacon_frequency.tag = resources.getStringArray(R.array.pref_sync_frequency_values)[i].toInt()
-                })
+                }
             }
             true
         }
