@@ -44,7 +44,15 @@ class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowA
     private val dialog: ProgressDialog? by lazy {
         indeterminateProgressDialog("")
     }
-    private val controller = MapController()
+
+    private val controller = MapController { position ->
+        val gmmIntentUri = Uri.parse("geo:0,0?q=${position.latitude},${position.longitude}(User's+Location)")
+        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        mapIntent.`package` = "com.google.android.apps.maps"
+        if (mapIntent.resolveActivity(packageManager) != null) {
+            startActivity(mapIntent)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,7 +137,7 @@ class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowA
 //        val polylineOptions = PolylineOptions()
 
         items.forEach {
-//            polylineOptions.add(it.position)
+            //            polylineOptions.add(it.position)
             boundsBuilder.include(it.getPosition())
         }
 

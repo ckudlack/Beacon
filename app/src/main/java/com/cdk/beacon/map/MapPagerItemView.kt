@@ -5,6 +5,7 @@ import android.support.annotation.AttrRes
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import com.airbnb.epoxy.CallbackProp
 import com.airbnb.epoxy.ModelProp
 import com.airbnb.epoxy.ModelView
 import com.cdk.beacon.DateTimeUtils
@@ -31,6 +32,11 @@ class MapPagerItemView @JvmOverloads constructor(
     @ModelProp
     fun setDate(timestamp: Long) {
         date.text = DateTimeUtils.format(context, timestamp)
+    }
+
+    @CallbackProp
+    fun setClickListener(clickListener: OnClickListener?) {
+        directions_button.setOnClickListener(clickListener)
     }
 
 }
