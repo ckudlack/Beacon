@@ -4,10 +4,10 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.LinearSnapHelper
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -85,7 +85,7 @@ class MapActivity : AppCompatActivity(), MapContract.View, GoogleMap.InfoWindowA
     }
 
     private fun setupRecyclerView() = with(recycler_view) {
-        layoutManager = android.support.v7.widget.LinearLayoutManager(this@MapActivity, RecyclerView.HORIZONTAL, false)
+        layoutManager = LinearLayoutManager(this@MapActivity, RecyclerView.HORIZONTAL, false)
         adapter = controller.adapter
         addOnScrollListener(object : RecyclerView.OnScrollListener() {
 

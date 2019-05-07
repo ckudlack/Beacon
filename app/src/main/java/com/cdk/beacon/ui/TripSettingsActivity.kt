@@ -4,11 +4,11 @@ import android.app.ProgressDialog
 import android.app.job.JobScheduler
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.preference.EditTextPreference
-import android.support.v7.preference.ListPreference
-import android.support.v7.preference.Preference
-import android.support.v7.preference.PreferenceFragmentCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
 import android.view.MenuItem
 import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip
@@ -67,7 +67,9 @@ class TripSettingsActivity : AppCompatActivity(), TripSettingsContract.View, Sha
         alert(error.message ?: getString(R.string.error_occurred), getString(R.string.error)).show()
     }
 
-    override fun showToast(textRes: Int) = toast(textRes)
+    override fun showToast(textRes: Int) {
+        toast(textRes)
+    }
 
     override fun updateSharedUsers(sharedUsers: List<String>) {
         trip.observers = sharedUsers

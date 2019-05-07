@@ -1,6 +1,6 @@
 package com.cdk.beacon.mvp.usecase
 
-import android.support.annotation.CallSuper
+import androidx.annotation.CallSuper
 import rx.Completable
 import rx.Observable
 import rx.Subscriber

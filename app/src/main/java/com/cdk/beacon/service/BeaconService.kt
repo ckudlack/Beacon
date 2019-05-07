@@ -12,7 +12,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.Build
 import android.os.PersistableBundle
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import com.cdk.beacon.DateTimeUtils
 import com.cdk.beacon.R
 import com.cdk.beacon.data.BeaconTrip

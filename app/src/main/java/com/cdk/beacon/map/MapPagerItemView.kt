@@ -1,8 +1,8 @@
 package com.cdk.beacon.map
 
 import android.content.Context
-import android.support.annotation.AttrRes
-import android.support.constraint.ConstraintLayout
+import androidx.annotation.AttrRes
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import com.airbnb.epoxy.CallbackProp
